@@ -1,4 +1,4 @@
-﻿namespace Linq
+﻿namespace NuGet.Querying.Internal
 {
     using System.Linq;
     using System.Linq.Expressions;

@@ -1,10 +1,9 @@
-namespace BarsUp.Designer.Workspace.NuGet.Utility
+﻿namespace NuGet.Querying.Functionality
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
 
-    public partial class AggregateRepository
+    internal static class Appliers
     {
         /// <summary>
         /// Функтор агрегатор коллекций в одну
@@ -12,7 +11,7 @@ namespace BarsUp.Designer.Workspace.NuGet.Utility
         /// <typeparam name="T"></typeparam>
         /// <param name="collections"></param>
         /// <returns></returns>
-		protected IEnumerable<T> Collection<T>(IEnumerable<IEnumerable<T>> collections)
+		internal static IEnumerable<T> Collection<T>(IEnumerable<IEnumerable<T>> collections)
         {
             var list = new List<T>();
             foreach (var collection in collections)
@@ -28,7 +27,7 @@ namespace BarsUp.Designer.Workspace.NuGet.Utility
         /// </summary>
         /// <param name="vs"></param>
         /// <returns></returns>
-        protected bool OneIsSuccess(IEnumerable<bool> vs)
+        internal static bool OneIsSuccess(IEnumerable<bool> vs)
         {
             return vs.Any(x => x == true);
         }
@@ -39,21 +38,9 @@ namespace BarsUp.Designer.Workspace.NuGet.Utility
         /// <typeparam name="T"></typeparam>
         /// <param name="ts"></param>
         /// <returns></returns>
-        protected T First<T>(IEnumerable<T> ts)
+        internal static T First<T>(IEnumerable<T> ts)
         {
             return ts.FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Синхронно
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="task"></param>
-        /// <returns></returns>
-        protected T Sync<T>(Task<T> task)
-        {
-            task.Wait();
-            return task.Result;
         }
     }
 }

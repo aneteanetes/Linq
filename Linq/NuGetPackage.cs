@@ -1,11 +1,9 @@
-﻿namespace Linq
+﻿namespace NuGet.Querying
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Text;
 
-    public abstract class NuGetPackage
+    public class NuGetPackage
     {
         public string Id { get; set; }
 

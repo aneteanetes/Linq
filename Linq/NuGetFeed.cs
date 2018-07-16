@@ -1,16 +1,17 @@
-﻿namespace Linq
+﻿namespace NuGet.Querying
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using global::NuGet.Querying.Internal;
 
     public class NuGetFeed : IOrderedQueryable<NuGetPackage>
     {
-        public NuGetFeed(string root)
+        public NuGetFeed(params string[] feeds)
         {
-            Provider = new NuGetFeedQueryProvider(root);
+            Provider = new NuGetFeedQueryProvider(feeds);
             Expression = Expression.Constant(this);
         }
 

@@ -1,15 +1,16 @@
-﻿namespace Linq
+﻿namespace NuGet.Querying.Internal
 {
+    using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
 
-    public class NuGetFeedQueryProvider : IQueryProvider
+    internal class NuGetFeedQueryProvider : IQueryProvider
     {
-        private readonly string root;
+        private readonly IEnumerable<string> feeds;
 
-        public NuGetFeedQueryProvider(string root)
+        public NuGetFeedQueryProvider(string[] feeds)
         {
-            this.root = root;
+            this.feeds = feeds;
         }
 
         public IQueryable CreateQuery(Expression expression)
@@ -30,7 +31,7 @@
         public TResult Execute<TResult>(Expression expression)
         {
             var isEnumerable = (typeof(TResult).Name == "IEnumerable`1");
-            return (TResult)NuGetFeedQueryMaterializer.Execute(expression, isEnumerable, root);
+            return (TResult)NuGetFeedQueryMaterializer.Execute(expression, isEnumerable, feeds);
         }
     }
 }

@@ -1,16 +1,15 @@
-﻿namespace Linq
+﻿namespace NuGet.Querying.Internal
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using System.Text;
+    using NuGet.Querying.Client;
 
-    public class NuGetFeedQueryMaterializer
+    internal class NuGetFeedQueryMaterializer
     {
-        internal static object Execute(Expression expression, bool isEnumerable, string root)
+        internal static object Execute(Expression expression, bool isEnumerable, IEnumerable<string> feeds)
         {
-            var queryableElements = GetAllFilesAndFolders(root);
+            var queryableElements = Root(feeds);
 
             // Copy the expression tree that was passed in, changing only the first
             // argument of the innermost MethodCallExpression.
@@ -28,20 +27,18 @@
             }
         }
 
-        private static IQueryable<NuGetPackage> GetAllFilesAndFolders(string root)
+        private static IQueryable<NuGetPackage> Root(IEnumerable<string> feeds)
         {
-            return Enumerable.Empty<NuGetPackage>().AsQueryable();
+            var repo = new NuGetRepository(feeds);
 
-            //var list = new List<NuGetPackage>();
-            //foreach (var directory in Directory.GetDirectories(root))
+            var list = new List<NuGetPackage>();
+
+            return null;
+
+            //return repo.SearchMeta().Select(x => new NuGetPackage
             //{
-            //    list.Add(new FolderElement(directory));
-            //}
-            //foreach (var file in Directory.GetFiles(root))
-            //{
-            //    list.Add(new FileElement(file));
-            //}
-            //return list.AsQueryable();
+            //    Id = x.Identity.Id
+            //}).AsQueryable();            
         }
     }
 }
