@@ -8,7 +8,7 @@ namespace Bars.NuGet.Querying
     using global::Bars.NuGet.Querying.Feed;
     using global::Bars.NuGet.Querying.Types;
 
-    public class NuGetFeed : IQueryable<NuGetPackage>
+    public class NuGetFeed : IOrderedQueryable<NuGetPackage>
     {
         public NuGetFeed(params string[] feeds)
         {
@@ -36,7 +36,5 @@ namespace Bars.NuGet.Querying
 
         public Expression Expression { get; private set; }
         public IQueryProvider Provider { get; private set; }
-
-        internal NuGetQueryFilter CurrentFilter = new NuGetQueryFilter();
     }
 }

@@ -1,55 +1,34 @@
 ﻿namespace Bars.NuGet.Querying
 {
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public static class NuGetQueryExtensions
     {
-        public static IQueryable<NuGetPackage> IncludePrerelease(this NuGetFeed feed)
-        {
-            feed.CurrentFilter.IncludePrerelease = true;
-            return feed;
-        }
-
         public static IQueryable<NuGetPackage> IncludePrerelease(this IQueryable<NuGetPackage> feedQuery)
         {
-            if (feedQuery is NuGetFeed nugetFeed)
-            {
-                return IncludePrerelease(nugetFeed);
-            }
-
-            return feedQuery;
-        }
-
-        public static IQueryable<NuGetPackage> IncludeUnlisted(this NuGetFeed feed)
-        {
-            feed.CurrentFilter.IncludeDelisted = true;
-            return feed;
+            return feedQuery.Where(x => x.Filter.IncludePrerelease == true);
         }
 
         public static IQueryable<NuGetPackage> IncludeUnlisted(this IQueryable<NuGetPackage> feedQuery)
         {
-            if (feedQuery is NuGetFeed nugetFeed)
-            {
-                return IncludeUnlisted(nugetFeed);
-            }
-
-            return feedQuery;
-        }
-
-        public static IQueryable<NuGetPackage> Latest(this NuGetFeed feed)
-        {
-            feed.CurrentFilter.Latest = true;
-            return feed;
+            return feedQuery.Where(x => x.Filter.IncludeDelisted == true);
         }
 
         public static IQueryable<NuGetPackage> Latest(this IQueryable<NuGetPackage> feedQuery)
         {
-            if (feedQuery is NuGetFeed nugetFeed)
-            {
-                return Latest(nugetFeed);
-            }
+            return feedQuery.Where(x => x.Filter.Latest == true);
+        }
 
-            return feedQuery;
+        public static Task<IQueryable<NuGetPackage>> Async(this IQueryable<NuGetPackage> feedQuery)
+        {
+            return Task.FromResult<IQueryable<NuGetPackage>>(feedQuery);
+        }
+
+        public static Task<T> Async<T>(this T feedQuery) where T : IEnumerable<NuGetPackage>
+        {
+            return Task.FromResult<T>(feedQuery);
         }
     }
 }

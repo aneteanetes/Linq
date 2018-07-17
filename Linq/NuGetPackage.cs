@@ -7,5 +7,7 @@ namespace Bars.NuGet.Querying
     public class NuGetPackage : NuGetPackageInfo
     {        
         public IEnumerable<Stream> Items { get; set; }
+        
+        internal readonly NuGetQueryFilter Filter = new NuGetQueryFilter();
     }
 }

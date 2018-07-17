@@ -2,6 +2,7 @@ namespace Bars.NuGet.Querying
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
 
     class Program
     {
@@ -14,11 +15,15 @@ namespace Bars.NuGet.Querying
             var packages = MyGet
                 .Where(x => x.Id.Contains("BarsUp"))
                 .IncludePrerelease()
+                .OrderBy(x => x.Id)
                 .Latest()
-                .ToList();
+                .Async();
+
+            packages.Wait();
+            packages.Result.
 
             Console.WriteLine($"Finded packages:");
-            packages.ForEach(p => Console.WriteLine(p.Id));
+            //packages.ForEach(p => Console.WriteLine(p.Id));
             Console.ReadLine();
         }
     }

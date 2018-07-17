@@ -33,7 +33,7 @@ namespace Bars.NuGet.Querying.Feed
 
             var list = new List<NuGetPackage>();
 
-            return null;
+            return Enumerable.Empty<NuGetPackage>().AsQueryable();
 
             //return repo.SearchMeta().Select(x => new NuGetPackage
             //{
