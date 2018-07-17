@@ -1,20 +1,29 @@
 using NuGet.Protocol.Core.Types;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 using System.Text;
 
 namespace Bars.NuGet.Querying.Types
 {
-    public class NuGetQueryFilter
+    internal class NuGetQueryFilter
     {
         public string Filter { get; set; }
 
+        public int Skip { get; set; }
 
+        public int Take { get; set; }
+        
+        public bool IncludePrerelease { get; set; }
+        
+        public bool IncludeDelisted { get; set; }
+        
+        public IEnumerable<string> PackageTypes { get; set; }
+        
+        public bool Latest { get; set; }
 
-        public NuGetQueryFilter()
-        {
-            SearchFilter
-            //string searchTerm, SearchFilter filters, int skip, int take, ILogger log, CancellationToken cancellationToken
-        }
+        public IdOrderRule OrderById { get; set; } = IdOrderRule.None;
+
+        public IEnumerable<FrameworkName> SupportedFrameworks { get; set; }
     }
 }

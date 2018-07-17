@@ -1,9 +1,11 @@
 ﻿namespace Bars.NuGet.Querying.Functionality
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
-    internal static class Appliers
+    internal static class Apply
     {
         /// <summary>
         /// Функтор агрегатор коллекций в одну

@@ -2,8 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using global::Bars.NuGet.Querying.Patches;
 
-    public static class Binders
+    public static class Binder
     {
         internal static IEnumerable<TResult> Bind<TSource, TResult>(this IEnumerable<TSource> sources, Func<TSource, TResult> command)
         {
@@ -41,5 +44,9 @@
         {
             return merge(BindParams(sources, paramExtract, command));
         }
+        
+        internal static Task<IEnumerable<T>> TaskCombine<T>(IEnumerable<Task<T>> results) => TaskPatch.WhenAll(results);
+
+        internal static Task<IEnumerable<T>> TaskMerge<T>(Task<IEnumerable<IEnumerable<T>>> task) => task.ContinueWith(t => Apply.Collection(t.Result));
     }
 }
