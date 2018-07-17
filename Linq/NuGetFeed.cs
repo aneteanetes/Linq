@@ -1,11 +1,11 @@
-﻿namespace NuGet.Querying
+namespace Bars.NuGet.Querying
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using global::NuGet.Querying.Internal;
+    using global::Bars.NuGet.Querying.Internal;
 
     public class NuGetFeed : IOrderedQueryable<NuGetPackage>
     {

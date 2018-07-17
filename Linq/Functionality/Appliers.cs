@@ -1,4 +1,4 @@
-﻿namespace NuGet.Querying.Functionality
+﻿namespace Bars.NuGet.Querying.Functionality
 {
     using System.Collections.Generic;
     using System.Linq;

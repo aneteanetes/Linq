@@ -1,4 +1,4 @@
-namespace NuGet.Querying.Client
+namespace Bars.NuGet.Querying.Client
 {
     using System;
     using System.Collections.Generic;
@@ -7,7 +7,7 @@ namespace NuGet.Querying.Client
     using global::NuGet.Frameworks;
     using global::NuGet.Protocol;
     using global::NuGet.Protocol.Core.Types;
-    using global::NuGet.Querying.Logging;
+    using global::Bars.NuGet.Querying.Logging;
 
     /// <summary>
     /// Репозиторий который агрегирует несколько NuGet-фидов или других репозиториев

@@ -1,9 +1,9 @@
-﻿namespace NuGet.Querying.Internal
+namespace Bars.NuGet.Querying.Feed
 {
+    using global::Bars.NuGet.Querying.Client;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using NuGet.Querying.Client;
 
     internal class NuGetFeedQueryMaterializer
     {

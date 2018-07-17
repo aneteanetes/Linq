@@ -1,4 +1,4 @@
-//namespace NuGet.Querying.NuGet
+//namespace Bars.NuGet.Querying.NuGet
 //{
 //    using global::NuGet.Configuration;
 //    using global::NuGet.Frameworks;

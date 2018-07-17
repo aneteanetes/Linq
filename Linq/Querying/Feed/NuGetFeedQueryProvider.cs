@@ -1,4 +1,4 @@
-﻿namespace NuGet.Querying.Internal
+namespace Bars.NuGet.Querying.Feed
 {
     using System.Collections.Generic;
     using System.Linq;

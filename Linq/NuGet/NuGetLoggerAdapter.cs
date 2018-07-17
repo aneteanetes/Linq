@@ -1,4 +1,4 @@
-﻿namespace NuGet.Querying.Logging
+﻿namespace Bars.NuGet.Querying.Logging
 {
     using System;
     using System.Collections.Generic;
