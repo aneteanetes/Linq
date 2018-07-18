@@ -10,7 +10,7 @@ namespace Bars.Linq.Async
         }
     }
 
-    public class AsyncEnumerable<T> : IAsyncEnumerable<T>
+    public class AsyncEnumerable<T> : AsyncEnumerable, IAsyncEnumerable<T>
     {
         private readonly IAsyncEnumerator<T> asyncEnumerator;
         

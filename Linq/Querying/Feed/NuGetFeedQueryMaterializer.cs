@@ -43,7 +43,7 @@ namespace Bars.NuGet.Querying.Feed
             var convertedRequests = ConvertRequest(metaRequests);
 
             var enumer = new AsyncEnumerator<NuGetPackage>(convertedRequests);
-
+            
             var enumerable = AsyncEnumerable.FromResult(enumer);
 
             return default;
