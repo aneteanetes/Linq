@@ -16,14 +16,16 @@ namespace Bars.NuGet.Querying
                 .Where(x => x.Id.Contains("BarsUp"))
                 .IncludePrerelease()
                 .OrderBy(x => x.Id)
-                .Latest()
-                .Async();
+                .Latest();
 
-            packages.Wait();
-            packages.Result.
+            var glist = packages.ToList();
+                //.ToListAsync();
+
+            //packages.Wait();
+            //packages.Result.
 
             Console.WriteLine($"Finded packages:");
-            //packages.ForEach(p => Console.WriteLine(p.Id));
+            //packages.Result.ToList().ForEach(p => Console.WriteLine(p.Id));
             Console.ReadLine();
         }
     }

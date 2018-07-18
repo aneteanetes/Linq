@@ -1,11 +1,8 @@
-using NuGet.Protocol.Core.Types;
-using System;
-using System.Collections.Generic;
-using System.Runtime.Versioning;
-using System.Text;
-
 namespace Bars.NuGet.Querying.Types
 {
+    using System.Collections.Generic;
+    using System.Runtime.Versioning;
+
     internal class NuGetQueryFilter
     {
         public string Filter { get; set; }

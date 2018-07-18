@@ -35,6 +35,7 @@ namespace Bars.NuGet.Querying
         }
 
         public Expression Expression { get; private set; }
+
         public IQueryProvider Provider { get; private set; }
     }
 }

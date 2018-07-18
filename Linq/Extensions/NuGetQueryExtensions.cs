@@ -1,7 +1,9 @@
-﻿namespace Bars.NuGet.Querying
+namespace Bars.NuGet.Querying
 {
+    using global::Bars.NuGet.Querying.Patches;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
 
     public static class NuGetQueryExtensions
@@ -21,14 +23,14 @@
             return feedQuery.Where(x => x.Filter.Latest == true);
         }
 
-        public static Task<IQueryable<NuGetPackage>> Async(this IQueryable<NuGetPackage> feedQuery)
+        public static Task<List<NuGetPackage>> ToListAsync(this IQueryable<NuGetPackage> feedQuery)
         {
-            return Task.FromResult<IQueryable<NuGetPackage>>(feedQuery);
+            return Task.FromResult(feedQuery.ToList());
         }
 
-        public static Task<T> Async<T>(this T feedQuery) where T : IEnumerable<NuGetPackage>
-        {
-            return Task.FromResult<T>(feedQuery);
-        }
+        //public static AsyncEnumerable<IQueryable<NuGetPackage>> Async(this IQueryable<NuGetPackage> feedQuery)
+        //{
+        //    return new AsyncEnumerable<IQueryable<NuGetPackage>>(feedQuery);
+        //}
     }
 }
