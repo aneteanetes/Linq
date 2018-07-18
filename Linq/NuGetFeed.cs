@@ -5,10 +5,11 @@ namespace Bars.NuGet.Querying
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using global::Bars.Linq.Async;
     using global::Bars.NuGet.Querying.Feed;
     using global::Bars.NuGet.Querying.Types;
 
-    public class NuGetFeed : IOrderedQueryable<NuGetPackage>
+    public class NuGetFeed : IAsyncQueryable<NuGetPackage>
     {
         public NuGetFeed(params string[] feeds)
         {
@@ -28,14 +29,18 @@ namespace Bars.NuGet.Querying
         }
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
-        public Type ElementType
+        
+        public IAsyncEnumerator<NuGetPackage> GetAsyncEnumerator()
         {
-            get { return typeof(NuGetPackage); }
+            return AsyncProvider.AsyncExecute(Expression).GetAsyncEnumerator();
         }
+
+        public Type ElementType { get { return typeof(NuGetPackage); } }
 
         public Expression Expression { get; private set; }
 
         public IQueryProvider Provider { get; private set; }
+
+        public IAsyncQueryProvider<NuGetPackage> AsyncProvider { get; private set; }
     }
 }

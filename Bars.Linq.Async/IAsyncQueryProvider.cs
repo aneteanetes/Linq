@@ -5,7 +5,14 @@ namespace Bars.Linq.Async
 
     public interface IAsyncQueryProvider<T> : IQueryProvider
     {
-        IAsyncEnumerator<T> AsyncExecute(Expression expression);
+        /// <summary>
+        /// object?
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        IAsyncQueryable<T> AsyncExecute(Expression expression);
+
+        IAsyncQueryable<T> CreateAsyncQuery(Expression expression);
 
         //IAsyncQueryable<T> CreateAsyncQuery(Expression expression);
 

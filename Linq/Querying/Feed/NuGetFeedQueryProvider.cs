@@ -1,10 +1,11 @@
 namespace Bars.NuGet.Querying.Feed
 {
+    using global::Bars.Linq.Async;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
 
-    internal class NuGetFeedQueryProvider : IQueryProvider
+    internal class NuGetFeedQueryProvider : IAsyncQueryProvider<NuGetPackage>
     {
         private readonly IEnumerable<string> feeds;
 
@@ -12,6 +13,22 @@ namespace Bars.NuGet.Querying.Feed
         {
             this.feeds = feeds;
         }
+
+        public IAsyncQueryable<NuGetPackage> AsyncExecute(Expression expression)
+        {
+            return NuGetFeedQueryMaterializer.Execute<NuGetPackage>(expression, true, feeds);
+        }
+
+        public IAsyncQueryable<NuGetPackage> CreateAsyncQuery(Expression expression)
+        {
+            return new NuGetFeed(this, expression);
+        }
+
+        //public IAsyncEnumerable<NuGetPackage> AsyncExecute(Expression expression)
+        //{
+        //    var isEnumerable = (typeof(TResult).Name == "IEnumerable`1");
+        //    return NuGetFeedQueryMaterializer.Execute(expression, isEnumerable, feeds);
+        //}
 
         public IQueryable CreateQuery(Expression expression)
         {
@@ -30,8 +47,9 @@ namespace Bars.NuGet.Querying.Feed
 
         public TResult Execute<TResult>(Expression expression)
         {
-            var isEnumerable = (typeof(TResult).Name == "IEnumerable`1");
-            return (TResult)NuGetFeedQueryMaterializer.Execute(expression, isEnumerable, feeds);
+            return default;
+            //var isEnumerable = (typeof(TResult).Name == "IEnumerable`1");
+            //return (TResult)NuGetFeedQueryMaterializer.Execute(expression, isEnumerable, feeds);
         }
     }
 }

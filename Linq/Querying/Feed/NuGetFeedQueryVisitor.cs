@@ -1,13 +1,14 @@
 namespace Bars.NuGet.Querying.Feed
 {
+    using global::Bars.Linq.Async;
     using System.Linq;
     using System.Linq.Expressions;
 
-    internal class NuGetFeedQueryVisitor : ExpressionVisitor
+    internal class NuGetFeedQueryVisitor<T> : ExpressionVisitor
     {
-        private IQueryable<NuGetPackage> queryablePlaces;
+        private IAsyncQueryable<T> queryablePlaces;
 
-        internal NuGetFeedQueryVisitor(IQueryable<NuGetPackage> places)
+        internal NuGetFeedQueryVisitor(IAsyncQueryable<T> places)
         {
             this.queryablePlaces = places;
         }

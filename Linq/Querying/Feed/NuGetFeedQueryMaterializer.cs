@@ -1,5 +1,6 @@
 namespace Bars.NuGet.Querying.Feed
 {
+    using global::Bars.Linq.Async;
     using global::Bars.NuGet.Querying.Client;
     using System.Collections.Generic;
     using System.Linq;
@@ -7,33 +8,35 @@ namespace Bars.NuGet.Querying.Feed
 
     internal class NuGetFeedQueryMaterializer
     {
-        internal static object Execute(Expression expression, bool isEnumerable, IEnumerable<string> feeds)
+        internal static IAsyncQueryable<T> Execute<T>(Expression expression, bool isEnumerable, IEnumerable<string> feeds)
         {
-            var queryableElements = Root(feeds);
+            var queryableElements = Root<T>(feeds);
 
             // Copy the expression tree that was passed in, changing only the first
             // argument of the innermost MethodCallExpression.
-            var treeCopier = new NuGetFeedQueryVisitor(queryableElements);
-            var newExpressionTree = treeCopier.Visit(expression);
+            var treeCopier = new NuGetFeedQueryVisitor<T>(queryableElements);
+            Expression newExpressionTree = treeCopier.Visit(expression);
 
             // This step creates an IQueryable that executes by replacing Queryable methods with Enumerable methods.
             if (isEnumerable)
             {
-                return queryableElements.Provider.CreateQuery(newExpressionTree);
+                return queryableElements.AsyncProvider.CreateAsyncQuery(newExpressionTree);
             }
             else
             {
-                return queryableElements.Provider.Execute(newExpressionTree);
+                return queryableElements.AsyncProvider.AsyncExecute(newExpressionTree);
             }
         }
 
-        private static IQueryable<NuGetPackage> Root(IEnumerable<string> feeds)
+        private static IAsyncQueryable<T> Root<T>(IEnumerable<string> feeds)
         {
-            var repo = new NuGetRepository(feeds);
+            return null;
 
-            var list = new List<NuGetPackage>();
+            //var repo = new NuGetRepository(feeds);
 
-            return Enumerable.Empty<NuGetPackage>().AsQueryable();
+            //var list = new List<NuGetPackage>();
+
+            //return Enumerable.Empty<NuGetPackage>().AsQueryable();
 
             //return repo.SearchMeta().Select(x => new NuGetPackage
             //{
