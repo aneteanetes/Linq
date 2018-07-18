@@ -30,17 +30,17 @@ namespace Bars.NuGet.Querying.Client
         private readonly SourceCacheContext sourceCacheContext = new SourceCacheContext();
 
         /// <summary>
-        /// Адаптери логировщиков
+        /// Адаптеры логировщиков
         /// </summary>
-        private readonly List<NuGetLoggerAdapter> loggerAdapters = new List<NuGetLoggerAdapter>();
+        private readonly NuGetLoggerAdapter loggerAdapter;
 
         /// <summary>
         /// Создаёт новое объектное представление агрегированного репозитория.
         /// </summary>
         /// <param name="feeds">Список фидов, с авторизацией</param>
-        public NuGetRepository(Microsoft.Extensions.Logging.ILogger logger)
+        public NuGetRepository(Microsoft.Extensions.Logging.ILogger logger) : this()
         {
-            this.loggerAdapters.Add(new NuGetLoggerAdapter(logger));
+            this.loggerAdapter = new NuGetLoggerAdapter(logger);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Bars.NuGet.Querying.Client
         /// Создаёт новое объектное представление агрегированного репозитория.
         /// </summary>
         /// <param name="aggregateRepositories">Другие агрегрированные репозитории</param>
-        public NuGetRepository(params NuGetRepository[] aggregateRepositories) : this((Microsoft.Extensions.Logging.ILogger)null)
+        public NuGetRepository(Microsoft.Extensions.Logging.ILogger logger, params NuGetRepository[] aggregateRepositories) : this(logger)
         {
             var repositories = new List<SourceRepository>();
             var frameworks = new List<NuGetFramework>();            
@@ -94,7 +94,6 @@ namespace Bars.NuGet.Querying.Client
             foreach (var aggregateRepository in aggregateRepositories)
             {
                 repositories.AddRange(aggregateRepository.Repositories);
-                loggerAdapters.AddRange(aggregateRepository.loggerAdapters);
 
                 if (aggregateRepository.Frameworks != null)
                 {
@@ -106,15 +105,8 @@ namespace Bars.NuGet.Querying.Client
             this.Frameworks = frameworks;
             this.Repositories = repositories;
         }
-        
-        public IEnumerable<Microsoft.Extensions.Logging.ILogger> Loggers
-        {
-            get => loggerAdapters.Select(x => x.logger);
-            set
-            {
-                this.loggerAdapters.AddRange(value.Select(l => new NuGetLoggerAdapter(l)));
-            }
-        }
+
+        public Microsoft.Extensions.Logging.ILogger Logger => this.loggerAdapter.logger;
 
         /// <summary>
         /// Здесь освобождается кэш

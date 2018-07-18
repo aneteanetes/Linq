@@ -1,22 +1,23 @@
 namespace Bars.NuGet.Querying.Feed
 {
     using global::Bars.Linq.Async;
+    using global::Bars.NuGet.Querying.Client;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
 
     internal class NuGetFeedQueryProvider : IAsyncQueryProvider<NuGetPackage>
     {
-        private readonly IEnumerable<string> feeds;
+        private readonly NuGetRepository NuGetRepository;
 
         public NuGetFeedQueryProvider(string[] feeds)
         {
-            this.feeds = feeds;
+            this.NuGetRepository = new NuGetRepository(feeds);
         }
 
         public IAsyncQueryable<NuGetPackage> AsyncExecute(Expression expression)
         {
-            return NuGetFeedQueryMaterializer.Execute<NuGetPackage>(expression, true, feeds);
+            return NuGetFeedQueryMaterializer.Execute<NuGetPackage>(expression, true, NuGetRepository);
         }
 
         public IAsyncQueryable<NuGetPackage> CreateAsyncQuery(Expression expression)

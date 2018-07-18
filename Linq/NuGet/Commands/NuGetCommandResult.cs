@@ -1,4 +1,4 @@
-﻿namespace Bars.NuGet.Querying.Commands.CommandResult
+﻿namespace Bars.NuGet.Querying.Commands
 {
     using System;
     using System.Collections.Generic;
@@ -15,13 +15,6 @@
             this.resources = resources;
         }
 
-        public Task<IEnumerable<T>> Call<T>(Func<TResource, Task<IEnumerable<T>>> func)
-        {
-            var bind = Binder.Bind(this.resources(), func);
-            var combined = Binder.TaskCombine(bind);
-            var merged = Binder.TaskMerge(combined);
-
-            return merged;
-        }
+        public IEnumerable<Task<IEnumerable<T>>> Call<T>(Func<TResource, Task<IEnumerable<T>>> func) => Binder.Bind(this.resources(), func);
     }
 }

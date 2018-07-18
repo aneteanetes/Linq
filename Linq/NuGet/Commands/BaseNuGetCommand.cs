@@ -2,38 +2,34 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Text;
     using System.Threading;
-    using global::Bars.NuGet.Querying.Commands.CommandResult;
+    using System.Threading.Tasks;
     using global::Bars.NuGet.Querying.Functionality;
     using global::NuGet.Common;
     using global::NuGet.Protocol.Core.Types;
 
-    internal abstract class BaseNuGetCommand<T> where T : class, INuGetResource
+    internal abstract class BaseNuGetCommand<TResult,TParam, TCommand> where TCommand : class, INuGetResource
     {
         protected IEnumerable<SourceRepository> sourceRepositories;
         protected ILogger nugetLogger;
-        protected CancellationToken cancellationToken;
-
-        protected BaseNuGetCommand()
-        {
-
-        }
-
-        public BaseNuGetCommand(IEnumerable<SourceRepository> sourceRepositories, ILogger nugetLogger, CancellationToken cancellationToken)
+        protected CancellationToken cancellationToken = CancellationToken.None;
+        
+        public BaseNuGetCommand(IEnumerable<SourceRepository> sourceRepositories, ILogger nugetLogger)
         {
             this.nugetLogger = nugetLogger;
             this.sourceRepositories = sourceRepositories;
-            this.cancellationToken = cancellationToken == default
-                ? CancellationToken.None
-                : cancellationToken;
         }
-
-        protected NuGetCommandResult<T> Exec() => new NuGetCommandResult<T>(Resources);
-
-        private IEnumerable<T> Resources() => Binder.Bind(this.sourceRepositories, ResourceGetter);
-
-        private Func<SourceRepository, T> ResourceGetter = repo => repo.GetResource<T>();
         
+        private IEnumerable<TCommand> Resources() => Binder.Bind(this.sourceRepositories, ResourceGetter);
+
+        private Func<SourceRepository, TCommand> ResourceGetter = repo => repo.GetResource<TCommand>();
+
+        protected abstract Task<IEnumerable<TResult>> Command(TParam param, TCommand command);
+
+        public IEnumerable<Task<IEnumerable<TResult>>> Exec(TParam param)
+        {
+            var commandResult = new NuGetCommandResult<TCommand>(Resources);
+            return commandResult.Call(resource => Command(param, resource));
+        }
     }
 }

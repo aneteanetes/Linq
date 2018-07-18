@@ -4,11 +4,11 @@ namespace Bars.NuGet.Querying.Feed
     using System.Linq;
     using System.Linq.Expressions;
 
-    internal class NuGetFeedQueryVisitor<T> : ExpressionVisitor
+    internal class NuGetFeedQueryVisitor : ExpressionVisitor
     {
-        private IAsyncQueryable<T> queryablePlaces;
+        private IAsyncQueryable<NuGetPackage> queryablePlaces;
 
-        internal NuGetFeedQueryVisitor(IAsyncQueryable<T> places)
+        internal NuGetFeedQueryVisitor(IAsyncQueryable<NuGetPackage> places)
         {
             this.queryablePlaces = places;
         }

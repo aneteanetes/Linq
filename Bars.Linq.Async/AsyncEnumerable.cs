@@ -1,14 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections;
 
 namespace Bars.Linq.Async
 {
+    public class AsyncEnumerable
+    {
+        public static AsyncEnumerable<T> FromResult<T>(IAsyncEnumerator<T> data)
+        {
+            return new AsyncEnumerable<T>(data);
+        }
+    }
+
     public class AsyncEnumerable<T> : IAsyncEnumerable<T>
     {
         private readonly IAsyncEnumerator<T> asyncEnumerator;
-
+        
         public AsyncEnumerable(IAsyncEnumerator<T> asyncEnumerator)
         {
             this.asyncEnumerator = asyncEnumerator;
@@ -19,19 +24,5 @@ namespace Bars.Linq.Async
         }
 
         public IAsyncEnumerator<T> GetAsyncEnumerator() => this.asyncEnumerator;
-
-        /// <summary>
-        /// это вот пока что
-        /// </summary>
-        /// <param name="result"></param>
-        public async Task ForEach(Action<T> result)
-        {
-            var enumerator = this.GetAsyncEnumerator();
-            while (await enumerator.MoveNext())
-            {
-                var current = await enumerator.CurrentAsync;
-                result(current);
-            }
-        }
     }
 }

@@ -3,21 +3,23 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.Versioning;
+    using System.Threading;
     using System.Threading.Tasks;
     using global::Bars.NuGet.Querying.Commands;
     using global::Bars.NuGet.Querying.Types;
     using global::NuGet.Protocol.Core.Types;
 
-    internal class SearchNuGetCommand : BaseNuGetCommand<PackageSearchResource>
+    internal class SearchNuGetCommand : BaseNuGetCommand<IPackageSearchMetadata, NuGetQueryFilter, PackageSearchResource>
     {
-        public Task<IEnumerable<IPackageSearchMetadata>> SearchMeta(NuGetQueryFilter queryFilter)
+        public SearchNuGetCommand(IEnumerable<SourceRepository> sourceRepositories, global::NuGet.Common.ILogger nugetLogger) : base(sourceRepositories, nugetLogger)
         {
-            return this.Exec().Call(async resource =>
-            {
-                var filter = this.ConvertFilter(queryFilter);
-                filter.SupportedFrameworks = this.ConvertFrameworkNames(queryFilter.SupportedFrameworks);
-                return await resource.SearchAsync(queryFilter.Filter, filter, queryFilter.Skip, queryFilter.Take, this.nugetLogger, this.cancellationToken);
-            });
+        }
+
+        protected override async Task<IEnumerable<IPackageSearchMetadata>> Command(NuGetQueryFilter param, PackageSearchResource command)
+        {
+            var filter = this.ConvertFilter(param);
+            filter.SupportedFrameworks = this.ConvertFrameworkNames(param.SupportedFrameworks);
+            return await command.SearchAsync(param.Filter, filter, param.Skip, param.Take, this.nugetLogger, this.cancellationToken);
         }
 
         private SearchFilter ConvertFilter(NuGetQueryFilter queryFilter)
@@ -54,7 +56,7 @@
                 var takeVersionNums = frmNme.Version.Build == 0 ? 2 : 3;
                 return frmNme.Identifier
                     .ToLowerInvariant()
-                    .Replace(" ", "") 
+                    .Replace(" ", "")
                 + frmNme.Version.ToString(takeVersionNums);
             });
         }
