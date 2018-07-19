@@ -1,4 +1,4 @@
-﻿namespace Bars.Linq.Async
+namespace Bars.Linq.Async
 {
     using System;
     using System.Collections.Generic;

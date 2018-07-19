@@ -1,7 +1,7 @@
-using System.Collections;
-
-namespace Bars.Linq.Async
+namespace Bars.NuGet.Querying.Iterators
 {
+    using global::Bars.Linq.Async;
+
     public class AsyncEnumerable
     {
         public static AsyncEnumerable<T> FromResult<T>(IAsyncEnumerator<T> data)
@@ -13,7 +13,7 @@ namespace Bars.Linq.Async
     public class AsyncEnumerable<T> : AsyncEnumerable, IAsyncEnumerable<T>
     {
         private readonly IAsyncEnumerator<T> asyncEnumerator;
-        
+
         public AsyncEnumerable(IAsyncEnumerator<T> asyncEnumerator)
         {
             this.asyncEnumerator = asyncEnumerator;

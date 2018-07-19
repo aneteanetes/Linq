@@ -1,19 +1,8 @@
-﻿namespace Bars.Linq.Async
+namespace Bars.NuGet.Querying.Iterators
 {
-    using System.Collections;
+    using global::Bars.Linq.Async;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-
-    //public class AsyncEnumerator
-    //{
-    //    public static AsyncEnumerator<T> FromResult<T>(IEnumerable<Task<IEnumerable<T>>> data) where T : IEnumerable
-    //    {
-    //        return new AsyncEnumerator<T>
-    //        {
-    //            enumerable = data
-    //        };
-    //    }
-    //}
 
     public class AsyncEnumerator<T> : IAsyncEnumerator<T>
     {
@@ -23,9 +12,9 @@
 
         public AsyncEnumerator(IEnumerable<Task<IEnumerable<T>>> sources)
         {
-            this.sources = sources;
+            this.sources = sources.OrderByCompletion();
         }
-        
+
         public Task<T> CurrentAsync
         {
             get
@@ -45,16 +34,8 @@
         /// <returns></returns>
         public async Task<bool> MoveNext()
         {
-            if (awaitedSource != null)
-            {
-                var movedAwaitedSource = awaitedSource.GetEnumerator().MoveNext();
-                if (!movedAwaitedSource)
-                {
-                    awaitedSource = null;
-                    currentSource = null;
-                    return false;
-                }
-            }
+            if (TryMoveNextAwaitedSource(out var moved))
+                return moved;
 
             if (currentSource == null)
             {
@@ -71,39 +52,31 @@
 
             awaitedSource = await currentSource;
 
-            var movedAwaitedSource2 = awaitedSource.GetEnumerator().MoveNext();
-            if (!movedAwaitedSource2)
+            if (TryMoveNextAwaitedSource(out var movedNew))
+                return movedNew;
+
+            return false;
+        }
+
+        private bool TryMoveNextAwaitedSource(out bool moveResult)
+        {
+            moveResult = false;
+
+            if (awaitedSource == null)
+                return false;
+
+            var movedAwaitedSource = awaitedSource.GetEnumerator().MoveNext();
+            if (!movedAwaitedSource)
             {
                 awaitedSource = null;
                 currentSource = null;
                 return false;
             }
+            moveResult = true;
 
             return true;
         }
 
         public void Dispose() { }
     }
-
-
-    //public class AsyncEnumerator<T> : AsyncEnumerator, IAsyncEnumerator<T> where T: IEnumerable
-    //{
-    //    internal T enumerable;
-
-    //    public Task<T> CurrentAsync
-    //    {
-    //        get
-    //        {
-    //            var current = this.enumerable.GetEnumerator().Current;
-    //            return (Task<T>)current;
-    //        }
-    //    }
-
-    //    public Task<bool> MoveNext()
-    //    {
-    //        return Task.FromResult(this.enumerable.GetEnumerator().MoveNext());
-    //    }
-
-    //    public void Dispose() { }
-    //}
 }

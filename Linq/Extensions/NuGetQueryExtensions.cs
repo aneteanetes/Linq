@@ -1,6 +1,7 @@
 namespace Bars.NuGet.Querying
 {
     using global::Bars.Linq.Async;
+    using global::Bars.NuGet.Querying.Iterators;
     using global::Bars.NuGet.Querying.Patches;
     using System.Collections.Generic;
     using System.Linq;
@@ -33,10 +34,5 @@ namespace Bars.NuGet.Querying
 
             throw new System.Exception("not async");
         }
-
-        //public static AsyncEnumerable<IQueryable<NuGetPackage>> Async(this IQueryable<NuGetPackage> feedQuery)
-        //{
-        //    return new AsyncEnumerable<IQueryable<NuGetPackage>>(feedQuery);
-        //}
     }
 }

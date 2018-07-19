@@ -2,6 +2,7 @@ namespace Bars.NuGet.Querying.Feed
 {
     using global::Bars.Linq.Async;
     using global::Bars.NuGet.Querying.Client;
+    using global::Bars.NuGet.Querying.Iterators;
     using global::Bars.NuGet.Querying.Types;
     using global::NuGet.Protocol.Core.Types;
     using System.Collections.Generic;

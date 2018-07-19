@@ -17,7 +17,7 @@ namespace Bars.NuGet.Querying.Feed
 
         public IAsyncQueryable<NuGetPackage> AsyncExecute(Expression expression)
         {
-            return NuGetFeedQueryMaterializer.Execute<NuGetPackage>(expression, true, NuGetRepository);
+            return NuGetFeedQueryMaterializer.Execute(expression, true, NuGetRepository);
         }
 
         public IAsyncQueryable<NuGetPackage> CreateAsyncQuery(Expression expression)
