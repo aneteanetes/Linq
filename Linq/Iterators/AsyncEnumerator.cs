@@ -2,29 +2,31 @@ namespace Bars.NuGet.Querying.Iterators
 {
     using global::Bars.Linq.Async;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     public class AsyncEnumerator<T> : IAsyncEnumerator<T>
     {
-        private IEnumerable<T> awaitedSource;
-        private Task<IEnumerable<T>> currentSource;
-        private IEnumerable<Task<IEnumerable<T>>> sources;
+        private IEnumerator<T> awaitedSourceEnumerator;
+        private IEnumerator<Task<IEnumerable<T>>> sourceEnumerator;
 
         public AsyncEnumerator(IEnumerable<Task<IEnumerable<T>>> sources)
         {
-            this.sources = sources.OrderByCompletion();
+            this.sourceEnumerator = sources
+                .OrderByCompletion()
+                .GetEnumerator();
         }
 
         public Task<T> CurrentAsync
         {
             get
             {
-                if (awaitedSource == null)
+                if (awaitedSourceEnumerator == null)
                 {
                     return Task.FromResult(default(T));
                 }
 
-                return Task.FromResult(awaitedSource.GetEnumerator().Current);
+                return Task.FromResult(awaitedSourceEnumerator.Current);
             }
         }
 
@@ -34,47 +36,48 @@ namespace Bars.NuGet.Querying.Iterators
         /// <returns></returns>
         public async Task<bool> MoveNext()
         {
-            if (TryMoveNextAwaitedSource(out var moved))
-                return moved;
-
-            if (currentSource == null)
+            if (awaitedSourceEnumerator != null)
             {
-                var sourcesEnumerator = this.sources.GetEnumerator();
-                var movedSources = sourcesEnumerator.MoveNext();
-                if (!movedSources)
+                var movedAwaitedSource = awaitedSourceEnumerator.MoveNext();
+                if (!movedAwaitedSource)
                 {
-                    currentSource = null;
-                    return false;
+                    awaitedSourceEnumerator = null;
+                    return await MoveNext();
                 }
-
-                currentSource = sourcesEnumerator.Current;
+                return true;
             }
 
-            awaitedSource = await currentSource;
-
-            if (TryMoveNextAwaitedSource(out var movedNew))
-                return movedNew;
-
-            return false;
-        }
-
-        private bool TryMoveNextAwaitedSource(out bool moveResult)
-        {
-            moveResult = false;
-
-            if (awaitedSource == null)
-                return false;
-
-            var movedAwaitedSource = awaitedSource.GetEnumerator().MoveNext();
-            if (!movedAwaitedSource)
+            var movedSources = sourceEnumerator.MoveNext();
+            if (!movedSources)
             {
-                awaitedSource = null;
-                currentSource = null;
                 return false;
             }
-            moveResult = true;
 
-            return true;
+            awaitedSourceEnumerator = (await sourceEnumerator.Current)
+                .GetEnumerator();
+
+            return await MoveNext();
+
+            //if (currentSourceEnumerator == null)
+            //{
+            //    var movedSources = sourceEnumerator.MoveNext();
+            //    if (!movedSources)
+            //    {
+            //        awaitedSourceEnumerator = null;
+            //        return false;
+            //    }
+
+            //    var z = await sourceEnumerator.Current;
+            //}
+
+            //awaitedSource = (await currentSource).ToList(); //IListEnumerator не финализирует, сучара
+
+            //return await MoveNext();
+
+            //if (TryMoveNextAwaitedSource(out var movedNew))
+            //    return movedNew;
+
+            //return false;
         }
 
         public void Dispose() { }

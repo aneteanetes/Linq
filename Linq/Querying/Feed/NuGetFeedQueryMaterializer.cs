@@ -8,35 +8,45 @@ namespace Bars.NuGet.Querying.Feed
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using System.Runtime.Versioning;
     using System.Threading.Tasks;
 
     internal class NuGetFeedQueryMaterializer
     {
         internal static IAsyncQueryable<NuGetPackage> Execute(Expression expression, bool isEnumerable, NuGetRepository nuGetRepository)
         {
+            //тут мы подключаем всяких визиторов, которые будут формировать нормальный NuGetQueryFilter, передаём их в Root метод, который возвращает нам
+            // трушную хуйню
+
             var queryableElements = Root(nuGetRepository);
+
+            //между этими двумя шагами мы подключаем всяких визиторов, которые будут формировать нормальный NuGetQueryFilter
+
+            return queryableElements;
 
             // Copy the expression tree that was passed in, changing only the first
             // argument of the innermost MethodCallExpression.
-            var treeCopier = new NuGetFeedQueryVisitor(queryableElements);
-            Expression newExpressionTree = treeCopier.Visit(expression);
+            //var treeCopier = new NuGetFeedQueryVisitor(queryableElements);
+            //Expression newExpressionTree = treeCopier.Visit(expression);
 
-            // This step creates an IQueryable that executes by replacing Queryable methods with Enumerable methods.
-            if (isEnumerable)
-            {
-                return queryableElements.AsyncProvider.CreateAsyncQuery(newExpressionTree);
-            }
-            else
-            {
-                return queryableElements.AsyncProvider.AsyncExecute(newExpressionTree);
-            }
+            //// This step creates an IQueryable that executes by replacing Queryable methods with Enumerable methods.
+            //if (isEnumerable)
+            //{
+            //    return queryableElements.AsyncProvider.CreateAsyncQuery(newExpressionTree);
+            //}
+            //else
+            //{
+            //    return queryableElements.AsyncProvider.AsyncExecute(newExpressionTree);
+            //}
         }
 
         private static IAsyncQueryable<NuGetPackage> Root(NuGetRepository nuGetRepository)
         {
             var filter = new NuGetQueryFilter
             {
-                Filter = "bars"
+                Filter = "bars",
+                SupportedFrameworks = new FrameworkName[] { new FrameworkName(".Net standard", new System.Version(2, 1)) },
+                Take = int.MaxValue
             };
 
             var metaRequests = nuGetRepository.Search.Exec(filter);
@@ -44,10 +54,8 @@ namespace Bars.NuGet.Querying.Feed
             var convertedRequests = ConvertRequest(metaRequests);
 
             var enumer = new AsyncEnumerator<NuGetPackage>(convertedRequests);
-            
-            var enumerable = AsyncEnumerable.FromResult(enumer);
 
-            return default;
+            return AsyncEnumerable.FromResult(enumer);
         }
 
         private static IEnumerable<Task<IEnumerable<NuGetPackage>>> ConvertRequest(IEnumerable<Task<IEnumerable<IPackageSearchMetadata>>> metaRequests)

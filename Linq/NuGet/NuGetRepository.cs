@@ -38,7 +38,7 @@ namespace Bars.NuGet.Querying.Client
         /// Создаёт новое объектное представление агрегированного репозитория.
         /// </summary>
         /// <param name="feeds">Список фидов, с авторизацией</param>
-        public NuGetRepository(Microsoft.Extensions.Logging.ILogger logger) : this()
+        public NuGetRepository(Microsoft.Extensions.Logging.ILogger logger)
         {
             this.loggerAdapter = new NuGetLoggerAdapter(logger);
         }

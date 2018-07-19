@@ -13,13 +13,16 @@ namespace Bars.NuGet.Querying
     {
         public NuGetFeed(params string[] feeds)
         {
-            Provider = new NuGetFeedQueryProvider(feeds);
+            AsyncProvider = new NuGetFeedQueryProvider(feeds);
+            Provider = AsyncProvider;
             Expression = Expression.Constant(this);
         }
 
         internal NuGetFeed(IQueryProvider provider, Expression expression)
         {
+            var asyncQueryProvider = provider as IAsyncQueryProvider<NuGetPackage>;
             Provider = provider;
+            AsyncProvider = asyncQueryProvider;
             Expression = expression;
         }
 

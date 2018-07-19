@@ -1,22 +1,19 @@
 namespace Bars.NuGet.Querying.Client
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using global::NuGet.Configuration;
-    using global::NuGet.Frameworks;
-    using global::NuGet.Protocol;
-    using global::NuGet.Protocol.Core.Types;
-    using global::Bars.NuGet.Querying.Logging;
     using global::Bars.NuGet.Querying.NuGet.Commands;
+    using System;
 
     public partial class NuGetRepository : IDisposable
     {
-        public NuGetRepository()
+        private SearchNuGetCommand searchNuGetCommand;
+        internal SearchNuGetCommand Search
         {
-            this.Search = new SearchNuGetCommand(this.Repositories, this.loggerAdapter);
+            get
+            {
+                if (searchNuGetCommand == null)
+                    searchNuGetCommand = new SearchNuGetCommand(this.Repositories, this.loggerAdapter);
+                return searchNuGetCommand;
+            }
         }
-
-        internal readonly SearchNuGetCommand Search;
     }
 }

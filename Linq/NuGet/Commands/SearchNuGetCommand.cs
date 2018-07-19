@@ -1,4 +1,4 @@
-﻿namespace Bars.NuGet.Querying.NuGet.Commands
+namespace Bars.NuGet.Querying.NuGet.Commands
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -53,7 +53,7 @@
         {
             return frameworkNames.Select(frmNme =>
             {
-                var takeVersionNums = frmNme.Version.Build == 0 ? 2 : 3;
+                var takeVersionNums = frmNme.Version.Build == -1 ? 2 : 3;
                 return frmNme.Identifier
                     .ToLowerInvariant()
                     .Replace(" ", "")
