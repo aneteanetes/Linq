@@ -2,7 +2,6 @@ namespace Bars.NuGet.Querying.Iterators
 {
     using global::Bars.Linq.Async;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
 
     public class AsyncEnumerator<T> : IAsyncEnumerator<T>
@@ -57,27 +56,6 @@ namespace Bars.NuGet.Querying.Iterators
                 .GetEnumerator();
 
             return await MoveNext();
-
-            //if (currentSourceEnumerator == null)
-            //{
-            //    var movedSources = sourceEnumerator.MoveNext();
-            //    if (!movedSources)
-            //    {
-            //        awaitedSourceEnumerator = null;
-            //        return false;
-            //    }
-
-            //    var z = await sourceEnumerator.Current;
-            //}
-
-            //awaitedSource = (await currentSource).ToList(); //IListEnumerator не финализирует, сучара
-
-            //return await MoveNext();
-
-            //if (TryMoveNextAwaitedSource(out var movedNew))
-            //    return movedNew;
-
-            //return false;
         }
 
         public void Dispose() { }

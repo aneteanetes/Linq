@@ -26,11 +26,6 @@ namespace Bars.NuGet.Querying.Iterators
             this.asyncEnumerator = asyncEnumerator;
         }
 
-        internal AsyncEnumerable(IAsyncQueryProvider<T> provider)
-        {
-            AsyncProvider = provider;
-        }
-
         public IAsyncQueryProvider<T> AsyncProvider { get; private set; }
 
         public Type ElementType => GetType();
@@ -41,15 +36,7 @@ namespace Bars.NuGet.Querying.Iterators
 
         public IAsyncEnumerator<T> GetAsyncEnumerator() => this.asyncEnumerator;
 
-        public TaskAwaiter<IAsyncEnumerator<T>> GetAwaiter()
-        {
-            return default;
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return Enumerable.Empty<T>().GetEnumerator();
-        }
+        public IEnumerator<T> GetEnumerator() => Enumerable.Empty<T>().GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
     }

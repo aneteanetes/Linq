@@ -37,12 +37,16 @@ namespace Bars.NuGet.Querying.Feed
 
         public object Execute(Expression expression)
         {
-            return Execute<NuGetPackage>(expression);
+            return Execute<IEnumerable<NuGetPackage>>(expression);
         }
 
         public TResult Execute<TResult>(Expression expression)
         {
-            return default;
+            var result = NuGetFeedQueryMaterializer.Execute(expression, true, NuGetRepository) as IAsyncEnumerable<NuGetPackage>;
+            var task = result.ToList();
+            task.Wait();
+
+            return (TResult)(task.Result as object);
         }
     }
 }
