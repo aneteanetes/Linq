@@ -1,5 +1,6 @@
 namespace Bars.NuGet.Querying.Feed
 {
+    using Bars.NuGet.Querying.Visitors;
     using global::Bars.Linq.Async;
     using global::Bars.NuGet.Querying.Client;
     using global::Bars.NuGet.Querying.Iterators;
@@ -15,10 +16,13 @@ namespace Bars.NuGet.Querying.Feed
     {
         internal static IAsyncQueryable<NuGetPackage> Execute(Expression expression, bool isEnumerable, NuGetRepository nuGetRepository)
         {
+            var expr = new NuGetFeedQueryVisitor().CopyAndModify(expression);
+
+            var filter = MaterializeFilter(expr);
             //тут мы подключаем всяких визиторов, которые будут формировать нормальный NuGetQueryFilter, передаём их в Root метод, который возвращает нам
             // трушную хуйню
 
-            var queryableElements = Root(nuGetRepository);
+            var queryableElements = Root(nuGetRepository, filter);
 
             //между этими двумя шагами мы подключаем всяких визиторов, которые будут формировать нормальный NuGetQueryFilter
 
@@ -40,9 +44,14 @@ namespace Bars.NuGet.Querying.Feed
             //}
         }
 
-        private static IAsyncQueryable<NuGetPackage> Root(NuGetRepository nuGetRepository)
+        private static NuGetQueryFilter MaterializeFilter(Expression expression)
         {
-            var filter = new NuGetQueryFilter
+            return (expression as LambdaExpression).Compile().DynamicInvoke() as NuGetQueryFilter;
+        }
+
+        private static IAsyncQueryable<NuGetPackage> Root(NuGetRepository nuGetRepository, NuGetQueryFilter filter)
+        {
+            filter = filter ?? new NuGetQueryFilter
             {
                 Filter = "bars",
                 SupportedFrameworks = new FrameworkName[] { new FrameworkName(".Net standard", new System.Version(2, 1)) },
