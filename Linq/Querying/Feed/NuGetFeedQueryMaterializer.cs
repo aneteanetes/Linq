@@ -16,9 +16,10 @@ namespace Bars.NuGet.Querying.Feed
     {
         internal static IAsyncQueryable<NuGetPackage> Execute(Expression expression, NuGetRepository nuGetRepository)
         {
-            var visitedExpression = new NuGetExpressionVisitor().Visit(expression);
+            var nuGetVisitor = new NuGetExpressionVisitor();
+            var visitedExpression = nuGetVisitor.Visit(expression);
 
-            var queryableElements = Root(nuGetRepository, visitedExpression.filter);
+            var queryableElements = Root(nuGetRepository, nuGetVisitor.GetNuGetQueryFilter());
 
             return queryableElements;
         }
