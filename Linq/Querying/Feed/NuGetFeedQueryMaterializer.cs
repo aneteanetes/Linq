@@ -14,44 +14,18 @@ namespace Bars.NuGet.Querying.Feed
 
     internal class NuGetFeedQueryMaterializer
     {
-        internal static IAsyncQueryable<NuGetPackage> Execute(Expression expression, bool isEnumerable, NuGetRepository nuGetRepository)
+        internal static IAsyncQueryable<NuGetPackage> Execute(Expression expression, NuGetRepository nuGetRepository)
         {
-            var expr = new NuGetFeedQueryVisitor().CopyAndModify(expression);
+            var visitedExpression = new NuGetExpressionVisitor().Visit(expression);
 
-            var filter = MaterializeFilter(expr);
-            //тут мы подключаем всяких визиторов, которые будут формировать нормальный NuGetQueryFilter, передаём их в Root метод, который возвращает нам
-            // трушную хуйню
-
-            var queryableElements = Root(nuGetRepository, filter);
-
-            //между этими двумя шагами мы подключаем всяких визиторов, которые будут формировать нормальный NuGetQueryFilter
+            var queryableElements = Root(nuGetRepository, visitedExpression.filter);
 
             return queryableElements;
-
-            // Copy the expression tree that was passed in, changing only the first
-            // argument of the innermost MethodCallExpression.
-            //var treeCopier = new NuGetFeedQueryVisitor(queryableElements);
-            //Expression newExpressionTree = treeCopier.Visit(expression);
-
-            //// This step creates an IQueryable that executes by replacing Queryable methods with Enumerable methods.
-            //if (isEnumerable)
-            //{
-            //    return queryableElements.AsyncProvider.CreateAsyncQuery(newExpressionTree);
-            //}
-            //else
-            //{
-            //    return queryableElements.AsyncProvider.AsyncExecute(newExpressionTree);
-            //}
-        }
-
-        private static NuGetQueryFilter MaterializeFilter(Expression expression)
-        {
-            return (expression as LambdaExpression).Compile().DynamicInvoke() as NuGetQueryFilter;
         }
 
         private static IAsyncQueryable<NuGetPackage> Root(NuGetRepository nuGetRepository, NuGetQueryFilter filter)
         {
-            filter = filter ?? new NuGetQueryFilter
+            filter = new NuGetQueryFilter
             {
                 Filter = "bars",
                 SupportedFrameworks = new FrameworkName[] { new FrameworkName(".Net standard", new System.Version(2, 1)) },

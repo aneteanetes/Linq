@@ -17,7 +17,7 @@ namespace Bars.NuGet.Querying.Feed
 
         public IAsyncQueryable<NuGetPackage> AsyncExecute(Expression expression)
         {
-            return NuGetFeedQueryMaterializer.Execute(expression, true, NuGetRepository);
+            return NuGetFeedQueryMaterializer.Execute(expression, NuGetRepository);
         }
 
         public IAsyncQueryable<NuGetPackage> CreateAsyncQuery(Expression expression)
@@ -42,7 +42,7 @@ namespace Bars.NuGet.Querying.Feed
 
         public TResult Execute<TResult>(Expression expression)
         {
-            var result = NuGetFeedQueryMaterializer.Execute(expression, true, NuGetRepository) as IAsyncEnumerable<NuGetPackage>;
+            var result = NuGetFeedQueryMaterializer.Execute(expression, NuGetRepository) as IAsyncEnumerable<NuGetPackage>;
             var task = result.ToList();
             task.Wait();
 

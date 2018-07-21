@@ -7,7 +7,6 @@ namespace Bars.NuGet.Querying
     using System.Linq.Expressions;
     using global::Bars.Linq.Async;
     using global::Bars.NuGet.Querying.Feed;
-    using global::Bars.NuGet.Querying.Types;
 
     public class NuGetFeed : IAsyncQueryable<NuGetPackage>
     {

@@ -6,14 +6,14 @@ namespace Bars.NuGet.Querying
     using System.Threading;
     using System.Threading.Tasks;
 
-    public static class TaskExtensions
+    internal static class TaskExtensions
     {
         /// <summary> 
         /// Returns a sequence of tasks which will be observed to complete with the same set 
         /// of results as the given input tasks, but in the order in which the original tasks complete. 
         /// -- jon skeet
         /// </summary> 
-        public static IEnumerable<Task<T>> OrderByCompletion<T>(this IEnumerable<Task<T>> inputTasks)
+        internal static IEnumerable<Task<T>> OrderByCompletion<T>(this IEnumerable<Task<T>> inputTasks)
         {
             // Copy the input so we know it’ll be stable, and we don’t evaluate it twice 
             var inputTaskList = inputTasks.ToList();
@@ -54,7 +54,7 @@ namespace Bars.NuGet.Querying
         /// Propagates the status of the given task (which must be completed) to a task completion source 
         /// (which should not be). 
         /// </summary> 
-        private static void PropagateResult<T>(Task<T> completedTask,
+        internal static void PropagateResult<T>(Task<T> completedTask,
             TaskCompletionSource<T> completionSource)
         {
             switch (completedTask.Status)

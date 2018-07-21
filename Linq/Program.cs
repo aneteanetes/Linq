@@ -19,18 +19,21 @@ namespace Bars.NuGet.Querying
 
             var MyGet = new NuGetFeed("https://barsgroup.myget.org/F/barsup-net-core/auth/122a4baf-5686-4675-8420-3132823267c7/api/v3/index.json", "https://api.nuget.org/v3-index/index.json");
 
-            var packages = MyGet
+            await MyGet
                 .Where(x => x.Id.Contains("BarsUp"))
                 .IncludePrerelease()
+                .Latest()
                 .OrderBy(x => x.Id)
-                .ToList();
+                .ToAsync()
+                .ForEach(x => Console.WriteLine(x.Id));
+
 
             Console.WriteLine($"Finded packages:");
 
-            foreach (var package in packages)
-            {
-                Console.WriteLine(package?.Id ?? "empty");
-            }
+            //foreach (var package in packages)
+            //{
+            //    Console.WriteLine(package?.Id ?? "empty");
+            //}
 
             //var enumerator = packages.GetAsyncEnumerator();
             //while (await enumerator.MoveNext())
