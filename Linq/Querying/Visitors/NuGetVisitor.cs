@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Runtime.Versioning;
@@ -41,6 +42,23 @@
             var frameworkName = new FrameworkName(splitted[0].Replace(".", "").ToLowerInvariant(), version);
 
             nuGetQueryFilter.SupportedFrameworks = new List<FrameworkName>() { frameworkName };
+        }
+
+        public Expression Visit<TVisitor, TCast>(Expression node, Func<TCast, Expression> func)
+            where TVisitor : NuGetVisitor
+            where TCast : Expression
+        {
+            var cast = Visit<TVisitor>(node) as TCast;
+            return func(cast);
+        }
+
+        public Expression Visit<TVisitor>(Expression node)
+            where TVisitor : NuGetVisitor
+        {
+            var internalCtor = typeof(TVisitor).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).FirstOrDefault();
+
+            var newVisitor = typeof(TVisitor).New<TVisitor>(internalCtor, this.nuGetQueryFilter);
+            return newVisitor.Visit(node);
         }
     }
 }

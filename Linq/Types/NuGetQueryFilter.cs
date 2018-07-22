@@ -21,6 +21,6 @@ namespace Bars.NuGet.Querying.Types
 
         public IdOrderRule OrderById { get; set; } = IdOrderRule.None;
 
-        public IEnumerable<FrameworkName> SupportedFrameworks { get; set; }
+        public ICollection<FrameworkName> SupportedFrameworks { get; set; } = new List<FrameworkName>();
     }
 }

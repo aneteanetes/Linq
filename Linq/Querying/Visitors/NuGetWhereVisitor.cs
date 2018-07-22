@@ -16,12 +16,12 @@
             var body = node.Body;
             if (body.NodeType == ExpressionType.Equal)
             {
-                new NuGetEqualsVisitor(this.nuGetQueryFilter).Visit(body);
+                this.Visit<NuGetEqualsVisitor>(node);
             }
 
             if (body.NodeType == ExpressionType.Call)
             {
-                new NuGetCallVisitor(this.nuGetQueryFilter).Visit(body);
+                this.Visit<NuGetCallVisitor>(node);
             }
 
             return Expression.Lambda<Func<NuGetPackage, bool>>(Expression.Constant(true), node.Parameters);

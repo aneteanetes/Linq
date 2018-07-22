@@ -17,14 +17,12 @@ namespace Bars.NuGet.Querying.Visitors
             string[] skipTake = { "Skip", "Take" };
             if (skipTake.Contains(methodName))
             {
-                var expression = new NuGetSkipTakeVisitor(this.nuGetQueryFilter).Visit(node);
-                return this.VisitMethodCall(expression as MethodCallExpression);
+                return this.Visit<NuGetSkipTakeVisitor, MethodCallExpression>(node, VisitMethodCall);
             }
 
             if (methodName == "Where")
             {
-                var expression = new NuGetWhereVisitor(this.nuGetQueryFilter).Visit(node);
-                return this.Visit(expression);
+                return this.Visit<NuGetWhereVisitor, Expression>(node, Visit);
             }
 
             return base.VisitMethodCall(node);
