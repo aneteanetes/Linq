@@ -7,8 +7,8 @@
 
     internal class NuGetCallVisitor : NuGetVisitor
     {
-        internal NuGetCallVisitor(NuGetQueryFilter nuGetQueryFilter) : base(nuGetQueryFilter)
-        {            
+        public NuGetCallVisitor(NuGetQueryFilter nuGetQueryFilter) : base(nuGetQueryFilter)
+        {
         }
 
         protected override Expression VisitMethodCall(MethodCallExpression node)

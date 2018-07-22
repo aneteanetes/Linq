@@ -10,6 +10,7 @@
 
     internal class NuGetVisitor : ExpressionVisitor
     {
+        protected List<Func<Expression, Expression>> appliers = new List<Func<Expression, Expression>>();
         protected NuGetQueryFilter nuGetQueryFilter;
         internal NuGetQueryFilter GetNuGetQueryFilter()
         {
@@ -20,7 +21,7 @@
 
             return nuGetQueryFilter;
         }
-
+        
         public NuGetVisitor(NuGetQueryFilter nuGetQueryFilter)
         {
             this.nuGetQueryFilter = nuGetQueryFilter;
@@ -55,10 +56,23 @@
         public Expression Visit<TVisitor>(Expression node)
             where TVisitor : NuGetVisitor
         {
-            var internalCtor = typeof(TVisitor).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).FirstOrDefault();
+            var internalCtor = typeof(TVisitor).GetConstructors().FirstOrDefault();
 
             var newVisitor = typeof(TVisitor).New<TVisitor>(internalCtor, this.nuGetQueryFilter);
-            return newVisitor.Visit(node);
+            var visit = newVisitor.Visit(node);
+            this.appliers.AddRange(newVisitor.appliers);
+            return visit;
         }
+
+        /// <summary>
+        /// this method can't be evaluated for NuGetFeed, so, we can use this later, if mode will be SyncAvailable
+        /// </summary>
+        /// <param name="methodCallExpression"></param>
+        protected void NotEvaluated(MethodCallExpression methodCallExpression)
+        {
+            this.AddApplier(x => Expression.Call(methodCallExpression.Method, x, methodCallExpression.Arguments.Last()));
+        }
+
+        protected void AddApplier(Func<Expression, Expression> func) => this.appliers.Add(func);
     }
 }

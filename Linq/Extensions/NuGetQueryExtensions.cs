@@ -113,5 +113,16 @@ namespace Bars.NuGet.Querying
 
             throw new System.Exception("not async");
         }
+
+        /// <summary>
+        /// Indicates that not applicable IQueryable methods will be executed after all async calls combined to one synchronous collection
+        /// without this all not applicable IQueryable methods will be ignored
+        /// </summary>
+        /// <param name="feedQuery"></param>
+        /// <returns></returns>
+        public static IQueryable<NuGetPackage> SyncIncompatibility(this IQueryable<NuGetPackage> feedQuery)
+        {
+            return feedQuery.Where(x => x.Filter.SyncIncompatibility == true);
+        }
     }
 }

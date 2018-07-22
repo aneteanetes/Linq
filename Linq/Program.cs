@@ -20,18 +20,22 @@ namespace Bars.NuGet.Querying
             string[] possiblePackages = { "BarsUp.App", "BarsUp.Core" };
 
             var MyGet = new NuGetFeed("https://barsgroup.myget.org/F/barsup-net-core/auth/122a4baf-5686-4675-8420-3132823267c7/api/v3/index.json", "https://api.nuget.org/v3-index/index.json");
-            
+
             await MyGet
                 .Where(x => x.Id.Contains("BarsUp"))
                 .ForFramework(NetFramework.NetFramework, "4.6")
                 .ForFramework(NetFramework.NetStandard, "2.1")
                 .IncludePrerelease()
                 .Latest()
-                .OrderBy(x => x.Id)
+                .OrderBy(x=>x.Id)
+                .OrderBy(x => x.Author)
+                .OrderBy(x => x.Description)
+                .OrderByDescending(x => x.Owner)
+                .SyncIncompatibility()
                 .Skip(5)
                 .Take(10)
                 .ToAsync()
-                .ForEach(x => Console.WriteLine(x.Id));
+                .ForEach(x => Console.WriteLine($"{x.Id}\t{x.Author}\t{x.Owner}"));
 
 
             Console.WriteLine($"Finded packages:");

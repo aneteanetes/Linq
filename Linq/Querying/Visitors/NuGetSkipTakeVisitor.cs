@@ -8,7 +8,7 @@
     {
         private int count;
 
-        internal NuGetSkipTakeVisitor(NuGetQueryFilter nuGetQueryFilter) : base(nuGetQueryFilter)
+        public NuGetSkipTakeVisitor(NuGetQueryFilter nuGetQueryFilter) : base(nuGetQueryFilter)
         {
         }
 

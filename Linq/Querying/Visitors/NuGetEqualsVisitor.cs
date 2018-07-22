@@ -6,7 +6,7 @@
 
     internal class NuGetEqualsVisitor : NuGetVisitor
     {
-        internal NuGetEqualsVisitor(NuGetQueryFilter nuGetQueryFilter) : base(nuGetQueryFilter)
+        public NuGetEqualsVisitor(NuGetQueryFilter nuGetQueryFilter) : base(nuGetQueryFilter)
         {
         }
 
@@ -42,7 +42,7 @@
 
         private void BindProperty(string leftProperty, Expression left, object value)
         {
-            string[] internalBools = { "IncludePrerelease", "IncludeDelisted", "Latest" };
+            string[] internalBools = { "IncludePrerelease", "IncludeDelisted", "Latest", "SyncIncompatibility" };
             if (internalBools.Contains(leftProperty))
             {
                 (left as MemberExpression).Member.SetValue(this.nuGetQueryFilter, value);

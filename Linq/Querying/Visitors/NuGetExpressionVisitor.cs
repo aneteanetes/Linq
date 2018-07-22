@@ -1,13 +1,26 @@
 namespace Bars.NuGet.Querying.Visitors
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
     using Bars.NuGet.Querying.Types;
 
     internal class NuGetExpressionVisitor : NuGetVisitor
     {
-        internal NuGetExpressionVisitor() : base(new NuGetQueryFilter())
+        public NuGetExpressionVisitor() : base(new NuGetQueryFilter())
         {
+        }
+
+        internal IQueryable<NuGetPackage> GetNotEvaluated(IQueryable<NuGetPackage> from)
+        {
+            var root = (Expression)Expression.Constant(from);
+            appliers.Reverse();
+            foreach (var applier in appliers)
+            {
+                root = applier(root);
+            }
+            return (IQueryable<NuGetPackage>)Expression.Lambda(root).Compile().DynamicInvoke();
         }
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
@@ -23,6 +36,11 @@ namespace Bars.NuGet.Querying.Visitors
             if (methodName == "Where")
             {
                 return this.Visit<NuGetWhereVisitor, Expression>(node, Visit);
+            }
+            
+            if (NuGetOrderByVisitor.ApplicableOrderByMethods.Contains(methodName))
+            {
+                return this.Visit<NuGetOrderByVisitor, Expression>(node, Visit);
             }
 
             return base.VisitMethodCall(node);

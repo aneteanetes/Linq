@@ -7,7 +7,7 @@
 
     internal class NuGetWhereVisitor : NuGetVisitor
     {
-        internal NuGetWhereVisitor(NuGetQueryFilter nuGetQueryFilter) : base(nuGetQueryFilter)
+        public NuGetWhereVisitor(NuGetQueryFilter nuGetQueryFilter) : base(nuGetQueryFilter)
         {
         }
 

@@ -12,9 +12,9 @@ namespace Bars.NuGet.Querying
     {
         public NuGetFeed(params string[] feeds)
         {
-            AsyncProvider = new NuGetFeedQueryProvider(feeds);
-            Provider = AsyncProvider;
             Expression = Expression.Constant(this);
+            AsyncProvider = new NuGetFeedQueryProvider(feeds, Expression);
+            Provider = AsyncProvider;
         }
 
         internal NuGetFeed(IQueryProvider provider, Expression expression)

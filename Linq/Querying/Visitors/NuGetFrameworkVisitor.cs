@@ -7,7 +7,7 @@
 
     internal class NuGetFrameworkVisitor : NuGetVisitor
     {
-        internal NuGetFrameworkVisitor(NuGetQueryFilter nuGetQueryFilter) : base(nuGetQueryFilter)
+        public NuGetFrameworkVisitor(NuGetQueryFilter nuGetQueryFilter) : base(nuGetQueryFilter)
         {
         }
 

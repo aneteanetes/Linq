@@ -9,15 +9,17 @@ namespace Bars.NuGet.Querying.Feed
     internal class NuGetFeedQueryProvider : IAsyncQueryProvider<NuGetPackage>
     {
         private readonly NuGetRepository NuGetRepository;
+        private readonly Expression root;
 
-        public NuGetFeedQueryProvider(string[] feeds)
+        public NuGetFeedQueryProvider(string[] feeds,Expression root)
         {
             this.NuGetRepository = new NuGetRepository(feeds);
+            this.root = root;
         }
 
         public IAsyncQueryable<NuGetPackage> AsyncExecute(Expression expression)
         {
-            return NuGetFeedQueryMaterializer.Execute(expression, NuGetRepository);
+            return NuGetFeedQueryMaterializer.Execute(expression, NuGetRepository, root);
         }
 
         public IAsyncQueryable<NuGetPackage> CreateAsyncQuery(Expression expression)
@@ -42,7 +44,7 @@ namespace Bars.NuGet.Querying.Feed
 
         public TResult Execute<TResult>(Expression expression)
         {
-            var result = NuGetFeedQueryMaterializer.Execute(expression, NuGetRepository) as IAsyncEnumerable<NuGetPackage>;
+            var result = NuGetFeedQueryMaterializer.Execute(expression, NuGetRepository,root) as IAsyncEnumerable<NuGetPackage>;
             var task = result.ToList();
             task.Wait();
 
