@@ -38,6 +38,7 @@ namespace Bars.NuGet.Querying.Visitors
                 return this.Visit<NuGetWhereVisitor, Expression>(node, Visit);
             }
             
+            //orderby
             if (NuGetOrderByVisitor.ApplicableOrderByMethods.Contains(methodName))
             {
                 return this.Visit<NuGetOrderByVisitor, Expression>(node, Visit);

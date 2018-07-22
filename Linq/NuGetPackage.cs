@@ -4,7 +4,7 @@ namespace Bars.NuGet.Querying
     using System.Collections.Generic;
     using System.IO;
 
-    public class NuGetPackage : NuGetPackageInfo
+    public sealed class NuGetPackage : NuGetPackageInfo
     {        
         public IEnumerable<Stream> Items { get; set; }
         

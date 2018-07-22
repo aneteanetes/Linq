@@ -18,8 +18,9 @@ namespace Bars.NuGet.Querying.NuGet.Commands
         protected override async Task<IEnumerable<IPackageSearchMetadata>> Command(NuGetQueryFilter param, PackageSearchResource command)
         {
             var filter = this.ConvertFilter(param);
+            var query = this.GetQuery(param.Filter);
             filter.SupportedFrameworks = this.ConvertFrameworkNames(param.SupportedFrameworks);
-            return await command.SearchAsync(param.Filter, filter, param.Skip, param.Take, this.nugetLogger, this.cancellationToken);
+            return await command.SearchAsync(query, filter, param.Skip, param.Take, this.nugetLogger, this.cancellationToken);
         }
 
         private SearchFilter ConvertFilter(NuGetQueryFilter queryFilter)
@@ -47,6 +48,11 @@ namespace Bars.NuGet.Querying.NuGet.Commands
 
 
             return searchFilter;
+        }
+
+        private string GetQuery(Dictionary<string,string> segments)
+        {
+            return string.Join(' ', segments.Select(x => $"{x.Key}:{x.Value}"));
         }
 
         private IEnumerable<string> ConvertFrameworkNames(IEnumerable<FrameworkName> frameworkNames)

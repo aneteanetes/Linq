@@ -25,16 +25,21 @@ namespace Bars.NuGet.Querying
             Console.WriteLine($"Finded packages:");
 
             await MyGet
+                .Where(x => x.Id == "Bars")
                 .Where(x => x.Id.Contains("BarsUp"))
-                .Where(x => x.Author.StartsWith("Bars") || x.Owner.EndsWith("s"))
+                .Where(x => x.Author == "Bars.Group" && x.Id.Contains("JQuery") && x.Author.StartsWith("Bars") || x.Owner.EndsWith("s"))
                 .ForFramework(NetFramework.NetFramework, "4.6")
                 .ForFramework(NetFramework.NetStandard, "2.1")
                 .IncludePrerelease()
                 .Latest()
+                .WithTag("BarsGroup")
+                .Where(x => x.Tags.Contains("Bars.Group"))
+                .WithTags("Bars", "Accesability")
                 .OrderBy(x => x.Id)
                 .OrderBy(x => x.Author)
                 .OrderBy(x => x.Description)
                 .OrderByDescending(x => x.Owner)
+                .SyncIncompatibility()
                 .Skip(5)
                 .Take(10)
                 .ToAsync()

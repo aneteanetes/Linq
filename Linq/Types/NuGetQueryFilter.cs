@@ -5,7 +5,7 @@ namespace Bars.NuGet.Querying.Types
 
     internal class NuGetQueryFilter
     {
-        public string Filter { get; set; }
+        public Dictionary<string, string> Filter { get; set; } = new Dictionary<string, string>();
 
         public int Skip { get; set; }
 

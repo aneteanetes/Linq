@@ -100,6 +100,33 @@ namespace Bars.NuGet.Querying
         }
 
         /// <summary>
+        /// Searchs package with target tag
+        /// </summary>
+        /// <param name="feedQuery"></param>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        public static IQueryable<NuGetPackage> WithTag(this IQueryable<NuGetPackage> feedQuery, string tag)
+        {
+            return feedQuery.Where(x => x.Tags.Contains(tag));
+        }
+
+        /// <summary>
+        /// searches packages with target tags
+        /// </summary>
+        /// <param name="feedQuery"></param>
+        /// <param name="tags"></param>
+        /// <returns></returns>
+        public static IQueryable<NuGetPackage> WithTags(this IQueryable<NuGetPackage> feedQuery, params string[] tags)
+        {
+            foreach (var tag in tags)
+            {
+                feedQuery = feedQuery.Where(x => x.Tags.Contains(tag));
+            }
+
+            return feedQuery;
+        }
+
+        /// <summary>
         /// Get async enumerable
         /// </summary>
         /// <param name="feedQuery"></param>

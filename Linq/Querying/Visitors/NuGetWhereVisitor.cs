@@ -2,32 +2,59 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Linq.Expressions;
+    using System.Reflection;
+    using System.Runtime.Versioning;
     using Bars.NuGet.Querying.Types;
     using FastMember;
 
+    /// <summary>
+    /// Remove all <see cref="Queryable.Where{TSource}(System.Linq.IQueryable{TSource}, System.Linq.Expressions.Expression{System.Func{TSource, bool}})" />
+    /// if it is applicable
+    /// If not applicable : apply what can, but adds to SyncIncapability
+    /// </summary>
     internal class NuGetWhereVisitor : NuGetVisitor
     {
-        private static IEnumerable<string> availableFields;
+        private static TypeAccessor QueryFilterAccessor = TypeAccessor.Create(typeof(NuGetQueryFilter));
+
+        private static IEnumerable<string> nuGetPackageAvailableFields;
+        private static IEnumerable<string> NuGetPackageAvailableFields
+        {
+            get
+            {
+                if (nuGetPackageAvailableFields == null)
+                {
+                    nuGetPackageAvailableFields = TypeAccessor.Create(typeof(NuGetPackage)).GetMembers().Select(x => x.Name)
+                        .Except(new string[] { "Filter" });
+                }
+                return nuGetPackageAvailableFields;
+            }
+        }
+
+        private static IEnumerable<string> queryFilterAvailableFields;
+        private static IEnumerable<string> QueryFilterAvailableFields
+        {
+            get
+            {
+                if (queryFilterAvailableFields == null)
+                {
+                    queryFilterAvailableFields = TypeAccessor.Create(typeof(NuGetQueryFilter)).GetMembers().Select(x => x.Name);
+                }
+                return queryFilterAvailableFields;
+            }
+        }
+        
         private static IEnumerable<string> AvailableFields
         {
             get
             {
-                if (availableFields == null)
-                {
-                    var packageFields = TypeAccessor.Create(typeof(NuGetPackage)).GetMembers().Select(x => x.Name);
-                    var filterFields = TypeAccessor.Create(typeof(NuGetQueryFilter)).GetMembers().Select(x => x.Name);
-
-                    availableFields = packageFields
-                        .Concat(filterFields)
-                        .Except(new string[] { "Filter" });
-                }
-
-                return availableFields;
+                return QueryFilterAvailableFields
+                        .Concat(NuGetPackageAvailableFields);
             }
         }
-
+        
         private MethodCallExpression Where;
         private bool CanEvaluated = true;
 
@@ -51,45 +78,195 @@
                 return Where.Arguments.First();
             }
 
+            if (node.Method.Name == "Contains")
+            {
+                this.VisitContains(node);
+                return node;
+            }
+
             return base.VisitMethodCall(node);
         }
 
         protected override Expression VisitLambda<T>(Expression<T> node)
         {
-            if (node.NodeType == ExpressionType.Call)
+            var body = node.Body;
+
+            if (body.NodeType == ExpressionType.Call)
             {
-                CanEvaluated = true;
+                if (body is MethodCallExpression callBody)
+                {
+                    if (callBody.Method.Name == "Contains")
+                    {
+                        this.VisitContains(callBody);
+                        return node;
+                    }
+                }
+                else
+                {
+                    throw CantParseExpression(body);
+                }
             }
 
-            if (node.NodeType == ExpressionType.Equal)
+            if (body.NodeType == ExpressionType.Equal)
             {
-                CanEvaluated = true;
+                if (body is BinaryExpression binaryBody)
+                {
+                    this.VisitEqual(binaryBody);
+                    return node;
+                }
+                else
+                {
+                    throw CantParseExpression(body);
+                }
             }
 
             CanEvaluated = false;
             return base.VisitLambda(node);
         }
-        
-        //protected override Expression VisitMember(MemberExpression node)
-        //{
-        //    var member = node.Member;
 
-        //    if (AvailableFields.Contains(member.Name))
-        //    {
-        //        if (CurrentMethod != null)
-        //        {
-        //            this.CollapseMethod = true;
-        //            this.Visit<NuGetCallVisitor>(CurrentMethod);
-        //        }
+        protected override Expression VisitBinary(BinaryExpression node)
+        {
+            if (node.NodeType == ExpressionType.Equal)
+            {
+                this.VisitEqual(node);
+            }
 
-        //        if (CurrentUnary != null)
-        //        {
-        //            this.CollapseUnary = true;
-        //            this.Visit<NuGetEqualsVisitor>(CurrentUnary);
-        //        }
-        //    }
+            return base.VisitBinary(node);
+        }
 
-        //    return base.VisitMember(node);
-        //}
+        private void VisitEqual(BinaryExpression node)
+        {
+            #region left
+
+            string propertyName = string.Empty;
+
+            if (node.Left is MemberExpression memberNode)
+            {
+                propertyName = memberNode.Member.Name;
+            }
+            else
+            {
+                CanEvaluated = false;
+                return;
+            }            
+
+            if (!AvailableFields.Contains(propertyName))
+            {
+                CanEvaluated = false;
+                return;
+            }
+
+            #endregion
+
+            #region right + result
+
+            try
+            {
+                object value = Expression.Lambda(node.Right).Compile().DynamicInvoke();
+
+                if (QueryFilterAvailableFields.Contains(propertyName))
+                {
+                    QueryFilterAccessor[this.nuGetQueryFilter, propertyName] = value;
+                }
+                else
+                {
+                    if (this.nuGetQueryFilter.Filter.TryGetValue(propertyName, out string current))
+                    {
+                        this.nuGetQueryFilter.Filter[propertyName] = (value as string);
+                    }
+                    else
+                    {
+                        this.nuGetQueryFilter.Filter.Add(propertyName, (value as string));
+                    }
+                }
+            }
+            catch
+            {
+                CanEvaluated = false;
+            }
+
+            #endregion
+        }
+
+        private void VisitContains(MethodCallExpression node)
+        {
+            MemberInfo property = null;
+
+            #region left
+
+            if (node.Object is MemberExpression memberNode)
+            {
+                property = memberNode.Member;
+            }
+            else
+            {
+                CanEvaluated = false;
+                return;
+            }
+
+            if (!AvailableFields.Contains(property.Name))
+            {
+                CanEvaluated = false;
+                return;
+            }
+
+            #endregion
+
+            #region right
+
+            object value = null;
+
+            try
+            {
+                value = Expression.Lambda(node.Arguments[0]).Compile().DynamicInvoke();
+            }
+            catch
+            {
+                CanEvaluated = false;
+                return;
+            }
+
+            #endregion
+
+            #region process
+
+            //рефактор потом, сейчас ночь бл*
+
+            string tag = "Tags";
+
+            if (property.Name == "SupportedFrameworks")
+            {
+                this.nuGetQueryFilter.SupportedFrameworks.Add(value as FrameworkName);
+            }
+            else if (property.Name == tag)
+            {
+                if (this.nuGetQueryFilter.Filter.TryGetValue(tag, out string currentTags))
+                {
+                    this.nuGetQueryFilter.Filter[tag] = currentTags + " " + (value as string);
+                }
+                else
+                {
+                    this.nuGetQueryFilter.Filter.Add(tag, (value as string));
+                }
+            }
+            else
+            {
+                if (this.nuGetQueryFilter.Filter.TryGetValue(property.Name, out string current))
+                {
+                    this.nuGetQueryFilter.Filter[property.Name] = current + " " + (value as string);
+                }
+                else
+                {
+                    this.nuGetQueryFilter.Filter.Add(property.Name, (value as string));
+                }
+            }
+
+            #endregion
+        }
+
+        private Exception CantParseExpression(Expression node)
+        {
+            return new Exception($"This expression can't be parsed for nuget query: {node.ToString()}");
+        }
     }
 }

@@ -21,6 +21,7 @@ namespace Bars.NuGet.Querying.Feed
 
             var visitedExpression = nuGetVisitor.Visit(expression);
             var filter = nuGetVisitor.GetNuGetQueryFilter();
+            PostProcessFilter(filter);
 
             var queryableElements = Root(nuGetRepository, filter);
 
@@ -45,7 +46,15 @@ namespace Bars.NuGet.Querying.Feed
             return enumerable;
         }
 
-        private static IAsyncQueryable<NuGetPackage> Synchronized(IAsyncQueryable<NuGetPackage> async, Func<IQueryable<NuGetPackage>,IQueryable<NuGetPackage>> getNotEvaluated)
+        private static void PostProcessFilter(NuGetQueryFilter nuGetQueryFilter)
+        {
+            foreach (var item in nuGetQueryFilter.Filter.Select(x=>x).ToList())
+            {
+                nuGetQueryFilter.Filter[item.Key] = "\"" + item.Value + "\"";
+            }
+        }
+
+        private static IAsyncQueryable<NuGetPackage> Synchronized(IAsyncQueryable<NuGetPackage> async, Func<IQueryable<NuGetPackage>, IQueryable<NuGetPackage>> getNotEvaluated)
         {
             var syncTask = AsyncEnumerableExtensions.ToList(async);
             syncTask.Wait();
@@ -73,7 +82,7 @@ namespace Bars.NuGet.Querying.Feed
             return new NuGetPackage
             {
                 Id = meta.Identity.Id,
-                Author = Guid.NewGuid().ToString().Substring(0,5),
+                Author = Guid.NewGuid().ToString().Substring(0, 5),
                 Owner = Guid.NewGuid().ToString().Substring(0, 5)
             };
         }
