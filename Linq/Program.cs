@@ -26,14 +26,15 @@ namespace Bars.NuGet.Querying
 
             await MyGet
                 .Where(x => x.Id.Contains("BarsUp"))
+                .Where(x => x.Author.StartsWith("Bars") || x.Owner.EndsWith("s"))
                 .ForFramework(NetFramework.NetFramework, "4.6")
                 .ForFramework(NetFramework.NetStandard, "2.1")
                 .IncludePrerelease()
                 .Latest()
-                .OrderBy(x=>x.Id)
+                .OrderBy(x => x.Id)
                 .OrderBy(x => x.Author)
                 .OrderBy(x => x.Description)
-                .OrderByDescending(x => x.Owner)                
+                .OrderByDescending(x => x.Owner)
                 .Skip(5)
                 .Take(10)
                 .ToAsync()
