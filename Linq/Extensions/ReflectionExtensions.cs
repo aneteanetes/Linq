@@ -20,6 +20,16 @@
             }
         }
 
+        internal static Type MemberType(this MemberInfo memberInfo)
+        {
+            switch (memberInfo.MemberType)
+            {
+                case MemberTypes.Field: return ((FieldInfo)memberInfo).FieldType;
+                case MemberTypes.Property: return ((PropertyInfo)memberInfo).PropertyType;
+                default:return typeof(object);
+            }
+        }
+
         internal static T New<T>(this Type type,ConstructorInfo ctor, params object[] argsObj)
         {
             ParameterInfo[] par = ctor.GetParameters();

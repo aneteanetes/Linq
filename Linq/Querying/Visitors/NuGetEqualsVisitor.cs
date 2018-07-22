@@ -6,18 +6,36 @@
 
     internal class NuGetEqualsVisitor : NuGetVisitor
     {
+        public bool Parsed = false;
+        private string propertyName;
         public NuGetEqualsVisitor(NuGetQueryFilter nuGetQueryFilter) : base(nuGetQueryFilter)
         {
         }
 
         protected override Expression VisitBinary(BinaryExpression node)
         {
-            var property = GetLeft(node.Left);
+            if (node.Left is MemberExpression memberExpr)
+            {
+                this.VisitMember(memberExpr);
+            }
+
             var value = GetRight(node.Right);
 
-            BindProperty(property, node.Left, value);
+            //BindProperty(property, node.Left, value);
 
-            return base.VisitBinary(node);
+            return Expression.Constant(true);
+            return Expression.MakeBinary(ExpressionType.Equal, Expression.Constant(true), Expression.Constant(true));
+        }
+
+        protected override Expression VisitMember(MemberExpression node)
+        {
+            var member = node.Member;
+            if (typeof(NuGetPackageInfo).IsAssignableFrom(member.ReflectedType))
+            {
+                propertyName = member.Name;
+            }
+
+            return base.VisitMember(node);
         }
 
         private string GetLeft(Expression expression)
