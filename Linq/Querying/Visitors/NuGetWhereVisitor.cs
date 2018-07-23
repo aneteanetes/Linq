@@ -1,19 +1,18 @@
-﻿namespace Bars.NuGet.Querying.Visitors
+namespace Bars.NuGet.Querying.Visitors
 {
+    using Bars.NuGet.Querying.Types;
+    using FastMember;
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Runtime.Versioning;
-    using Bars.NuGet.Querying.Types;
-    using FastMember;
 
     /// <summary>
     /// Remove all <see cref="Queryable.Where{TSource}(System.Linq.IQueryable{TSource}, System.Linq.Expressions.Expression{System.Func{TSource, bool}})" />
-    /// if it is applicable
-    /// If not applicable : apply what can, but adds to SyncIncapability
+    /// if it is applicable.
+    /// If not : apply what can, but adds to <see cref="NuGetQueryExtensions.SyncIncompatibility(System.Linq.IQueryable{NuGetPackage})"/>
     /// </summary>
     internal class NuGetWhereVisitor : NuGetVisitor
     {

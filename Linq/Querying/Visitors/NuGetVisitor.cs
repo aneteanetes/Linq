@@ -1,4 +1,4 @@
-﻿namespace Bars.NuGet.Querying.Visitors
+namespace Bars.NuGet.Querying.Visitors
 {
     using System;
     using System.Collections.Generic;
@@ -12,6 +12,7 @@
     {
         protected List<Func<Expression, Expression>> appliers = new List<Func<Expression, Expression>>();
         protected NuGetQueryFilter nuGetQueryFilter;
+
         internal NuGetQueryFilter GetNuGetQueryFilter()
         {
             if (this.nuGetQueryFilter.SupportedFrameworks == null)
@@ -35,7 +36,7 @@
                 .FrameworkName;
 
             if (framework == null)
-                throw new InvalidFilterCriteriaException("No one of framework version was chosen, and can't indicate current version of framework, use .ForFramework() method of query to add versions of frameworks applicabel to packages");
+                throw new InvalidFilterCriteriaException("No one of framework version was chosen, and can't indicate current version of framework, use .ForFramework() method of query to add versions of frameworks which applicable to packages");
 
             var splitted = framework.Split(",");
 
@@ -65,7 +66,7 @@
         }
 
         /// <summary>
-        /// this method can't be evaluated for NuGetFeed, so, we can use this later, if mode will be SyncAvailable
+        /// If method can't be evaluated for NuGetFeed, we can use this later with SyncIncompatibility mode
         /// </summary>
         /// <param name="methodCallExpression"></param>
         protected void NotEvaluated(MethodCallExpression methodCallExpression)
