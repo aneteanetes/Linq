@@ -2,6 +2,7 @@ namespace Bars.NuGet.Querying.Feed
 {
     using global::Bars.Linq.Async;
     using global::Bars.NuGet.Querying.Client;
+    using Microsoft.Extensions.Logging;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
@@ -11,9 +12,9 @@ namespace Bars.NuGet.Querying.Feed
         private readonly NuGetRepository NuGetRepository;
         private readonly Expression root;
 
-        public NuGetFeedQueryProvider(string[] feeds,Expression root)
+        public NuGetFeedQueryProvider(string localDir, ILogger logger, string[] feeds, Expression root)
         {
-            this.NuGetRepository = new NuGetRepository(feeds);
+            this.NuGetRepository = new NuGetRepository(localDir,feeds, logger);
             this.root = root;
         }
 
@@ -44,7 +45,7 @@ namespace Bars.NuGet.Querying.Feed
 
         public TResult Execute<TResult>(Expression expression)
         {
-            var result = NuGetFeedQueryMaterializer.Execute(expression, NuGetRepository,root) as IAsyncEnumerable<NuGetPackage>;
+            var result = NuGetFeedQueryMaterializer.Execute(expression, NuGetRepository, root) as IAsyncEnumerable<NuGetPackage>;
             var task = result.ToList();
             task.Wait();
 

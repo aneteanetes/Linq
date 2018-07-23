@@ -3,7 +3,7 @@ namespace Bars.NuGet.Querying.Types
     using System.Collections.Generic;
     using System.Runtime.Versioning;
 
-    internal class NuGetQueryFilter
+    public sealed class NuGetQueryFilter
     {
         public Dictionary<string, string> Filter { get; set; } = new Dictionary<string, string>();
 
@@ -14,9 +14,7 @@ namespace Bars.NuGet.Querying.Types
         public bool IncludePrerelease { get; set; }
         
         public bool IncludeDelisted { get; set; }
-        
-        public IEnumerable<string> PackageTypes { get; set; }
-        
+                
         public bool Latest { get; set; }
 
         public IdOrderRule OrderById { get; set; } = IdOrderRule.None;

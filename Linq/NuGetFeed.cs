@@ -7,13 +7,14 @@ namespace Bars.NuGet.Querying
     using System.Linq.Expressions;
     using global::Bars.Linq.Async;
     using global::Bars.NuGet.Querying.Feed;
+    using Microsoft.Extensions.Logging;
 
     public class NuGetFeed : IAsyncQueryable<NuGetPackage>
     {
-        public NuGetFeed(params string[] feeds)
+        public NuGetFeed(string localDir, ILogger logger, params string[] feeds)
         {
             Expression = Expression.Constant(this);
-            AsyncProvider = new NuGetFeedQueryProvider(feeds, Expression);
+            AsyncProvider = new NuGetFeedQueryProvider(localDir, logger, feeds, Expression);
             Provider = AsyncProvider;
         }
 

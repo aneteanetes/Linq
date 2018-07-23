@@ -14,6 +14,8 @@ namespace Bars.NuGet.Querying.Client
     /// </summary>
     public partial class NuGetRepository : IDisposable
     {
+        private string localDir = string.Empty;
+
         /// <summary>
         /// Репозитории-объекты из библиотеки NuGet
         /// </summary>
@@ -38,8 +40,9 @@ namespace Bars.NuGet.Querying.Client
         /// Создаёт новое объектное представление агрегированного репозитория.
         /// </summary>
         /// <param name="feeds">Список фидов, с авторизацией</param>
-        public NuGetRepository(Microsoft.Extensions.Logging.ILogger logger)
+        public NuGetRepository(string localDir, Microsoft.Extensions.Logging.ILogger logger)
         {
+            this.localDir = localDir;
             this.loggerAdapter = new NuGetLoggerAdapter(logger);
         }
 
@@ -48,11 +51,8 @@ namespace Bars.NuGet.Querying.Client
         /// Так же, заполняет фреймворки: .NET standard с 1.0 до 2.1
         /// </summary>
         /// <param name="feeds">Список фидов, с авторизацией</param>
-        public NuGetRepository(IEnumerable<string> feeds) : this(feeds, null)
+        public NuGetRepository(string localDir, IEnumerable<string> feeds) : this(localDir, feeds, null)
         {
-            (int major, int minor)[] versions = { (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 0), (2, 1) };
-
-            this.Frameworks = versions.Select(version => new NuGetFramework(".NETStandard", new Version(version.major, version.minor)));
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Bars.NuGet.Querying.Client
         /// </summary>
         /// <param name="feeds">Список фидов, с авторизацией</param>
         /// <param name="frameworks">Список фреймворков, для поиска пакетов для подходящей платформы</param>
-        public NuGetRepository(IEnumerable<string> feeds, NuGetFramework[] frameworks) : this((Microsoft.Extensions.Logging.ILogger)null)
+        public NuGetRepository(string localDir, IEnumerable<string> feeds, Microsoft.Extensions.Logging.ILogger logger) : this(localDir, logger)
         {
             var repositories = new List<SourceRepository>();
 
@@ -86,10 +86,10 @@ namespace Bars.NuGet.Querying.Client
         /// Создаёт новое объектное представление агрегированного репозитория.
         /// </summary>
         /// <param name="aggregateRepositories">Другие агрегрированные репозитории</param>
-        public NuGetRepository(Microsoft.Extensions.Logging.ILogger logger, params NuGetRepository[] aggregateRepositories) : this(logger)
+        public NuGetRepository(string localDir, Microsoft.Extensions.Logging.ILogger logger, params NuGetRepository[] aggregateRepositories) : this(localDir, logger)
         {
             var repositories = new List<SourceRepository>();
-            var frameworks = new List<NuGetFramework>();            
+            var frameworks = new List<NuGetFramework>();
 
             foreach (var aggregateRepository in aggregateRepositories)
             {

@@ -7,7 +7,7 @@ namespace Bars.NuGet.Querying.Types
     {
         public string Id { get; set; }
 
-        public string PackageId { get; set; }
+        internal string PackageId { get; set; }
 
         public Version Version { get; set; }
 

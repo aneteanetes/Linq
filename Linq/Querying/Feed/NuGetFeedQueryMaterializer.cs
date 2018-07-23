@@ -20,10 +20,10 @@ namespace Bars.NuGet.Querying.Feed
             var nuGetVisitor = new NuGetExpressionVisitor();
 
             var visitedExpression = nuGetVisitor.Visit(expression);
-            var filter = nuGetVisitor.GetNuGetQueryFilter();
-            PostProcessFilter(filter);
 
-            var queryableElements = Root(nuGetRepository, filter);
+            var filter = nuGetVisitor.GetNuGetQueryFilter();
+
+            var queryableElements = Materialize(nuGetRepository, filter);
 
             if (filter.SyncIncompatibility)
             {
@@ -33,25 +33,15 @@ namespace Bars.NuGet.Querying.Feed
             return queryableElements;
         }
 
-        private static IAsyncQueryable<NuGetPackage> Root(NuGetRepository nuGetRepository, NuGetQueryFilter filter)
+        private static IAsyncQueryable<NuGetPackage> Materialize(NuGetRepository nuGetRepository, NuGetQueryFilter filter)
         {
-            var metaRequests = nuGetRepository.Search.Exec(filter);
+            var metaRequests = nuGetRepository.Search(filter);
 
-            var convertedRequests = ConvertRequest(metaRequests);
-
-            var enumer = new AsyncEnumerator<NuGetPackage>(convertedRequests);
+            var enumer = new AsyncEnumerator<NuGetPackage>(metaRequests);
 
             var enumerable = AsyncEnumerable.FromResult(enumer);
 
             return enumerable;
-        }
-
-        private static void PostProcessFilter(NuGetQueryFilter nuGetQueryFilter)
-        {
-            foreach (var item in nuGetQueryFilter.Filter.Select(x=>x).ToList())
-            {
-                nuGetQueryFilter.Filter[item.Key] = "\"" + item.Value + "\"";
-            }
         }
 
         private static IAsyncQueryable<NuGetPackage> Synchronized(IAsyncQueryable<NuGetPackage> async, Func<IQueryable<NuGetPackage>, IQueryable<NuGetPackage>> getNotEvaluated)
@@ -65,26 +55,6 @@ namespace Bars.NuGet.Querying.Feed
 
             var completedEnumer = new CompletedAsyncEnumerator<NuGetPackage>(withFilter);
             return AsyncEnumerable.FromResult(completedEnumer);
-        }
-
-        private static IEnumerable<Task<IEnumerable<NuGetPackage>>> ConvertRequest(IEnumerable<Task<IEnumerable<IPackageSearchMetadata>>> metaRequests)
-        {
-            return metaRequests.Select(metaRequest => metaRequest.ContinueWith(request => FromTaskResult(request.Result)));
-        }
-
-        private static IEnumerable<NuGetPackage> FromTaskResult(IEnumerable<IPackageSearchMetadata> meta)
-        {
-            return meta.Select(FromMeta);
-        }
-
-        private static NuGetPackage FromMeta(IPackageSearchMetadata meta)
-        {
-            return new NuGetPackage
-            {
-                Id = meta.Identity.Id,
-                Author = Guid.NewGuid().ToString().Substring(0, 5),
-                Owner = Guid.NewGuid().ToString().Substring(0, 5)
-            };
         }
     }
 }
