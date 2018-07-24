@@ -1,10 +1,9 @@
 namespace Bars.NuGet.Querying
 {
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using global::Bars.Linq.Async;
-    using Microsoft.Extensions.Logging;
 
     public class Program
     {
@@ -29,7 +28,7 @@ namespace Bars.NuGet.Querying
                 //.Where(x => x.Id == "BarsUp")
                 .Where(x => x.Id.Contains("Bars"))
                 //.Where(x => x.Author == "Bars.Group" && x.Id.Contains("JQuery") && x.Author.StartsWith("Bars") || x.Owner.EndsWith("s"))
-                .ForFramework(NetFramework.NetFramework, "4.6")
+                .ForFramework(NetFramework.NetFramework, "4.5")
                 .ForFramework(NetFramework.NetStandard, "2.0")
                 .IncludePrerelease()
                 .Latest()

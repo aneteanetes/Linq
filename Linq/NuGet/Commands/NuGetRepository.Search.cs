@@ -18,7 +18,7 @@ namespace Bars.NuGet.Querying.Client
         public IEnumerable<Task<IEnumerable<NuGetPackage>>> Search(NuGetQueryFilter nuGetQueryFilter)
         {
             return this.Exec<NuGetPackage>(async (accessor) =>
-            {
+            {                
                 var search = await this.InternalSearch(nuGetQueryFilter, accessor.GetResource<PackageSearchResource>());
 
                 var packages = search.Select(FromMetadata);

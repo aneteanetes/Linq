@@ -12,9 +12,9 @@ namespace Bars.NuGet.Querying.Feed
         private readonly NuGetRepository NuGetRepository;
         private readonly Expression root;
 
-        public NuGetFeedQueryProvider(string localDir, ILogger logger, string[] feeds, Expression root)
+        public NuGetFeedQueryProvider(NuGetRepository nuGetRepository, Expression root)
         {
-            this.NuGetRepository = new NuGetRepository(localDir,feeds, logger);
+            this.NuGetRepository = nuGetRepository;
             this.root = root;
         }
 
