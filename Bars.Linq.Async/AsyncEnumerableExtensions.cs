@@ -2,6 +2,7 @@ namespace Bars.Linq.Async
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     public static  class AsyncEnumerableExtensions
@@ -34,9 +35,14 @@ namespace Bars.Linq.Async
             return data;
         }
 
-        public static IAsyncQueryable<T> AsQueryable<T>(this IAsyncEnumerable<T> asyncEnumerable)
+        public static IAsyncQueryable<T> AsAsyncQueryable<T>(this IQueryable<T> queryable)
         {
-            return default;
+            if (typeof(IAsyncQueryable<>).IsAssignableFrom(queryable.GetType()))
+            {
+                return queryable as IAsyncQueryable<T>;
+            }
+
+            throw new InvalidCastException($"{queryable.GetType()} is not instance of {typeof(IAsyncQueryable<>).FullName} and can not be casted to it!");
         }
     }
 }

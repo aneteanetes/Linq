@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bars.NuGet.Querying", "Linq\Bars.NuGet.Querying.csproj", "{C9093EC4-0DBF-4D60-82BA-27596722661E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bars.Linq.Async", "Bars.Linq.Async\Bars.Linq.Async.csproj", "{A6137BD3-4654-40DA-9F81-E7DE331A073B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bars.Linq.Async", "Bars.Linq.Async\Bars.Linq.Async.csproj", "{A6137BD3-4654-40DA-9F81-E7DE331A073B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -10,6 +10,7 @@ namespace Bars.NuGet.Querying.Client
     using global::Bars.NuGet.Querying.Types;
     using global::NuGet.Frameworks;
     using global::NuGet.Packaging.Core;
+    using global::NuGet.Protocol;
     using global::NuGet.Protocol.Core.Types;
     using global::NuGet.Versioning;
 
@@ -124,7 +125,7 @@ namespace Bars.NuGet.Querying.Client
                 Directory.CreateDirectory(dir);
             }
 
-            if (loader.GetType().Name == "RemotePackageArchiveDownloader")
+            if (typeof(RemotePackageArchiveDownloader).IsAssignableFrom(loader.GetType()))
             {
                 await loader.CopyNupkgFileToAsync(Path.Combine(dir, $"{nuGetPackage.Id} {nuGetPackage.Version.ToString(3)}.nupkg"), CancellationToken.None);
             }
