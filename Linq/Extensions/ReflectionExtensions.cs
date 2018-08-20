@@ -1,4 +1,4 @@
-﻿namespace Bars.NuGet.Querying
+namespace Bars.NuGet.Querying
 {
     using System;
     using System.Linq.Expressions;
@@ -6,30 +6,6 @@
 
     internal static class ReflectionExtensions
     {
-        internal static void SetValue(this MemberInfo memberInfo, object target, object value)
-        {
-            switch (memberInfo.MemberType)
-            {
-                case MemberTypes.Field:
-                    ((FieldInfo)memberInfo).SetValue(target, value);
-                    break;
-                case MemberTypes.Property:
-                    ((PropertyInfo)memberInfo).SetValue(target, value);
-                    break;
-                default: break;
-            }
-        }
-
-        internal static Type MemberType(this MemberInfo memberInfo)
-        {
-            switch (memberInfo.MemberType)
-            {
-                case MemberTypes.Field: return ((FieldInfo)memberInfo).FieldType;
-                case MemberTypes.Property: return ((PropertyInfo)memberInfo).PropertyType;
-                default:return typeof(object);
-            }
-        }
-
         internal static T New<T>(this Type type,ConstructorInfo ctor, params object[] argsObj)
         {
             ParameterInfo[] par = ctor.GetParameters();

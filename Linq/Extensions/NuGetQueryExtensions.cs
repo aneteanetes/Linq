@@ -1,15 +1,8 @@
 namespace Bars.NuGet.Querying
 {
-    using Bars.NuGet.Querying.Types;
-    using global::Bars.Linq.Async;
-    using global::Bars.NuGet.Querying.Iterators;
-    using global::Bars.NuGet.Querying.Patches;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.Versioning;
-    using System.Threading;
-    using System.Threading.Tasks;
 
     public static class NuGetQueryExtensions
     {
@@ -125,21 +118,7 @@ namespace Bars.NuGet.Querying
 
             return feedQuery;
         }
-
-        /// <summary>
-        /// Get async enumerable
-        /// </summary>
-        /// <param name="feedQuery"></param>
-        /// <returns></returns>
-        public static IAsyncEnumerable<NuGetPackage> ToAsync(this IQueryable<NuGetPackage> feedQuery)
-        {
-            if (feedQuery is NuGetFeed nugetFeed)
-            {
-                return new AsyncEnumerable<NuGetPackage>(nugetFeed.GetAsyncEnumerator());
-            }
-
-            throw new System.Exception("not async");
-        }
+        
 
         /// <summary>
         /// Indicates that not applicable IQueryable methods will be executed after all async calls combined to one synchronous collection

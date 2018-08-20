@@ -1,19 +1,11 @@
 namespace Bars.NuGet.Querying
 {
-    using Microsoft.Extensions.Logging;
     using System;
     using System.Linq;
-    using System.Threading.Tasks;
 
     public class Program
     {
         public static void Main(string[] args)
-        {
-            MainAsync(args).GetAwaiter().GetResult();
-            Console.ReadLine();
-        }
-
-        public static async Task MainAsync(string[] args)
         {
             string[] possiblePackages = { "BarsUp.App", "BarsUp.Core" };
 
@@ -27,26 +19,19 @@ namespace Bars.NuGet.Querying
             var packages = MyGet
                 //.Where(x => x.Id == "BarsUp")
                 .Where(x => x.Id.Contains("Bars"))
-                //.Where(x => x.Author == "Bars.Group" && x.Id.Contains("JQuery") && x.Author.StartsWith("Bars") || x.Owner.EndsWith("s"))
                 .ForFramework(NetFramework.NetFramework, "4.5")
                 .ForFramework(NetFramework.NetStandard, "2.0")
                 .IncludePrerelease()
                 .Latest()
-                //.WithTag("BarsGroup")
-                //.Where(x => x.Tags.Contains("Bars.Group"))
-                //.WithTags("Bars", "Accesability")
                 .OrderBy(x => x.Id)
                 .OrderBy(x => x.Author)
                 .OrderBy(x => x.Description)
                 .OrderByDescending(x => x.Owner)
                 .Skip(5)
-                .Take(10)
-                .ToAsync();
+                .Take(10);
 
-            var enumerator = packages.GetAsyncEnumerator();
-            while (await enumerator.MoveNext())
+            foreach (var package in packages)
             {
-                var package = await enumerator.CurrentAsync;
                 Console.WriteLine($"{package.Id}\t{package.Author}\t{package.Owner}");
                 Console.WriteLine("files:");
                 foreach (var file in package.Items)
@@ -58,9 +43,11 @@ namespace Bars.NuGet.Querying
 
             Console.WriteLine();
             Console.WriteLine("end");
+
+            Console.ReadLine();
         }
 
-        private static ILogger GetLogger()
+        private static Microsoft.Extensions.Logging.ILogger GetLogger()
         {
             return new Microsoft.Extensions.Logging.Console.ConsoleLogger("any", (msg, lvl) =>
             {

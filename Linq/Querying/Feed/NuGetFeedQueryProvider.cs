@@ -1,13 +1,12 @@
 namespace Bars.NuGet.Querying.Feed
 {
-    using global::Bars.Linq.Async;
     using global::Bars.NuGet.Querying.Client;
-    using Microsoft.Extensions.Logging;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
 
-    internal class NuGetFeedQueryProvider : IAsyncQueryProvider<NuGetPackage>
+    internal class NuGetFeedQueryProvider : IQueryProvider
     {
         private readonly NuGetRepository NuGetRepository;
         private readonly Expression root;
@@ -17,17 +16,7 @@ namespace Bars.NuGet.Querying.Feed
             this.NuGetRepository = nuGetRepository;
             this.root = root;
         }
-
-        public IAsyncQueryable<NuGetPackage> AsyncExecute(Expression expression)
-        {
-            return NuGetFeedQueryMaterializer.Execute(expression, NuGetRepository, root);
-        }
-
-        public IAsyncQueryable<NuGetPackage> CreateAsyncQuery(Expression expression)
-        {
-            return new NuGetFeed(this, expression);
-        }
-
+        
         public IQueryable CreateQuery(Expression expression)
         {
             return new NuGetFeed(this, expression);
@@ -40,16 +29,17 @@ namespace Bars.NuGet.Querying.Feed
 
         public object Execute(Expression expression)
         {
-            return Execute<IEnumerable<NuGetPackage>>(expression);
+            return Execute<IEnumerator<NuGetPackage>>(expression);
         }
 
         public TResult Execute<TResult>(Expression expression)
         {
-            var result = NuGetFeedQueryMaterializer.Execute(expression, NuGetRepository, root) as IAsyncEnumerable<NuGetPackage>;
-            var task = result.ToList();
-            task.Wait();
+            if (!IsSupported<TResult>())
+                throw new ArgumentException($"The type argument - {typeof(TResult)}, is not supported by {nameof(NuGetFeedQueryProvider)}.");
 
-            return (TResult)(task.Result as object);
+            return (TResult)NuGetFeedQueryMaterializer.Execute(expression, NuGetRepository, root);
         }
+
+        private bool IsSupported<T>() => typeof(IEnumerator<NuGetPackage>).IsAssignableFrom(typeof(T));
     }
 }

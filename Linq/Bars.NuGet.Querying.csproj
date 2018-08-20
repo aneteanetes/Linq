@@ -24,8 +24,4 @@
     <PackageReference Include="Serilog" Version="2.7.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Bars.Linq.Async\Bars.Linq.Async.csproj" />
-  </ItemGroup>
-
 </Project>
