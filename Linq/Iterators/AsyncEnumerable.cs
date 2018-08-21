@@ -3,7 +3,11 @@ namespace Bars.NuGet.Querying.Iterators
     using System.Collections;
     using System.Collections.Generic;
 
-    public class AsyncEnumerable<T> : IEnumerable<T>
+    /// <summary>
+    /// internal
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    internal class AsyncEnumerable<T> : IEnumerable<T>
     {
         private readonly AsyncEnumerator<T> enumerator;
 

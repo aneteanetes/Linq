@@ -6,6 +6,9 @@ namespace Bars.NuGet.Querying.Feed
     using System.Linq;
     using System.Linq.Expressions;
 
+    /// <summary>
+    /// internal
+    /// </summary>
     internal class NuGetFeedQueryProvider : IQueryProvider
     {
         private readonly NuGetRepository NuGetRepository;

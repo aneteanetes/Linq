@@ -5,6 +5,9 @@
     using System.Threading.Tasks;
     using global::NuGet.Common;
 
+    /// <summary>
+    /// internal
+    /// </summary>
     internal class NuGetLoggerAdapter : ILogger
     {
         public readonly Microsoft.Extensions.Logging.ILogger logger;

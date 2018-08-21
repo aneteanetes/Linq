@@ -16,6 +16,11 @@ namespace Bars.NuGet.Querying.Client
 
     public partial class NuGetRepository : IDisposable
     {
+        /// <summary>
+        /// Search packages using <see cref="NuGetQueryFilter"/>
+        /// </summary>
+        /// <param name="nuGetQueryFilter"></param>
+        /// <returns></returns>
         public IEnumerable<Task<IEnumerable<NuGetPackage>>> Search(NuGetQueryFilter nuGetQueryFilter)
         {
             return this.Exec<NuGetPackage>(async (accessor) =>

@@ -4,6 +4,9 @@
     using System.Linq.Expressions;
     using Bars.NuGet.Querying.Types;
 
+    /// <summary>
+    /// internal
+    /// </summary>
     internal class NuGetSkipTakeVisitor : NuGetVisitor
     {
         private int count;

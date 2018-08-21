@@ -7,6 +7,12 @@ namespace Bars.NuGet.Querying.Client
 
     public partial class NuGetRepository : IDisposable
     {
+        /// <summary>
+        /// Executes func for every repository
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="func"></param>
+        /// <returns></returns>
         protected IEnumerable<Task<IEnumerable<TResult>>> Exec<TResult>(Func<NuGetResourceAccessor, Task<IEnumerable<TResult>>> func)
         {
             List<Task<IEnumerable<TResult>>> execResults = new List<Task<IEnumerable<TResult>>>();

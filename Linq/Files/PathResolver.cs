@@ -1,5 +1,8 @@
 ﻿namespace Bars.NuGet.Querying.Files
 {
+    /// <summary>
+    /// path resolver for controlling nuget file manipulating flow 
+    /// </summary>
     public abstract class PathResolver
     {
         /// <summary>

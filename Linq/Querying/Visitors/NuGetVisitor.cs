@@ -8,6 +8,9 @@ namespace Bars.NuGet.Querying.Visitors
     using System.Runtime.Versioning;
     using Bars.NuGet.Querying.Types;
 
+    /// <summary>
+    /// internal
+    /// </summary>
     internal class NuGetVisitor : ExpressionVisitor
     {
         protected List<Func<Expression, Expression>> appliers = new List<Func<Expression, Expression>>();

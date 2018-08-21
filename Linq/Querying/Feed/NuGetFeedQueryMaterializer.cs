@@ -9,6 +9,9 @@ namespace Bars.NuGet.Querying.Feed
     using global::Bars.NuGet.Querying.Iterators;
     using global::Bars.NuGet.Querying.Types;
 
+    /// <summary>
+    /// internal
+    /// </summary>
     internal class NuGetFeedQueryMaterializer
     {
         internal static IEnumerator<NuGetPackage> Execute(Expression expression, NuGetRepository nuGetRepository)

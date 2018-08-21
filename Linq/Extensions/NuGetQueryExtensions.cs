@@ -4,6 +4,9 @@ namespace Bars.NuGet.Querying
     using System.Linq;
     using System.Runtime.Versioning;
 
+    /// <summary>
+    /// NugetQuery extensions for controll query
+    /// </summary>
     public static class NuGetQueryExtensions
     {
         /// <summary>

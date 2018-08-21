@@ -12,19 +12,44 @@ namespace Bars.NuGet.Querying
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
 
+    /// <summary>
+    /// Queryable NuGet feed
+    /// </summary>
     public class NuGetFeed : IOrderedQueryable<NuGetPackage>
     {
         private readonly NuGetRepository nuGetRepository;
 
+        /// <summary>
+        /// Initialize new feed with default path resolver in localDir
+        /// </summary>
+        /// <param name="localDir">absolute path to feed local path</param>
+        /// <param name="feeds">collection of external feeds</param>
         public NuGetFeed(string localDir, params string[] feeds) 
             : this(localDir, NullLogger.Instance, feeds) { }
 
+        /// <summary>
+        /// Initialize new feed with path resolver and external feeds
+        /// </summary>
+        /// <param name="pathResolver">path resolver for nuget file unpack rules</param>
+        /// <param name="feeds">collection of external feeds</param>
         public NuGetFeed(PathResolver pathResolver, params string[] feeds)
             : this(pathResolver, NullLogger.Instance, feeds) { }
 
+        /// <summary>
+        /// Initialize new feed with default path resolver in localDir
+        /// </summary>
+        /// <param name="localDir">absolute path to feed local path</param>
+        /// <param name="logger">logger for nuget repository</param>
+        /// <param name="feeds">collection of external feeds</param>
         public NuGetFeed(string localDir, ILogger logger, params string[] feeds)
             : this(new DefaultPathResolver { LocalRepositoryAbsolutePath = localDir }, logger, feeds) { }
 
+        /// <summary>
+        /// Initialize new feed with path resolver and external feeds
+        /// </summary>
+        /// <param name="pathResolver">path resolver for nuget file unpack rules</param>
+        /// <param name="logger">logger for nuget repository</param>
+        /// <param name="feeds">collection of external feeds</param>
         public NuGetFeed(PathResolver pathResolver, ILogger logger, params string[] feeds)
         {
             nuGetRepository = new NuGetRepository(pathResolver, feeds, logger);
@@ -33,12 +58,17 @@ namespace Bars.NuGet.Querying
             Provider = new NuGetFeedQueryProvider(nuGetRepository);
         }
 
+        /// <summary>
+        /// internal
+        /// </summary>
+        /// <param name="provider"></param>
+        /// <param name="expression"></param>
         internal NuGetFeed(IQueryProvider provider, Expression expression)
         {
             Provider = provider;
             Expression = expression;
         }
-
+        
         public IEnumerator<NuGetPackage> GetEnumerator()
         {
             return Provider.Execute<IEnumerator<NuGetPackage>>(Expression);
@@ -54,11 +84,11 @@ namespace Bars.NuGet.Querying
 
         /// <summary>
         /// add or update new package to all feeds
-        /// тут нужны перегрузки для конкретного фида, либо отдельный фид комбайнить, тогда нужен злой конструктор фида как у нугет репоза
+        /// (feature)
         /// </summary>
         /// <param name="nuGetPackage"></param>
         /// <returns></returns>
-        public IEnumerable<bool> Add(NuGetPackage nuGetPackage)
+        internal IEnumerable<bool> Add(NuGetPackage nuGetPackage)
         {
             var uploadTask = this.nuGetRepository.Upload(nuGetPackage);
 
@@ -69,11 +99,11 @@ namespace Bars.NuGet.Querying
 
         /// <summary>
         /// remove package from all feeds
-        /// тут нужны перегрузки для конкретного фида, либо отдельный фид комбайнить, тогда нужен злой конструктор фида как у нугет репоза
+        /// (feature)
         /// </summary>
         /// <param name="nuGetPackage"></param>
         /// <returns></returns>
-        public IEnumerable<bool> Remove(NuGetPackage nuGetPackage)
+        internal IEnumerable<bool> Remove(NuGetPackage nuGetPackage)
         {
             var removeTask = this.nuGetRepository.Remove(nuGetPackage);
 

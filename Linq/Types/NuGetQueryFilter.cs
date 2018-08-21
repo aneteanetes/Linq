@@ -3,6 +3,9 @@ namespace Bars.NuGet.Querying.Types
     using System.Collections.Generic;
     using System.Runtime.Versioning;
 
+    /// <summary>
+    /// Search filter for nuget repository
+    /// </summary>
     public sealed class NuGetQueryFilter
     {
         public Dictionary<string, string> Filter { get; set; } = new Dictionary<string, string>();

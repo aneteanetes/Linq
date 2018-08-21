@@ -1,11 +1,13 @@
 namespace Bars.NuGet.Querying.Visitors
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
     using Bars.NuGet.Querying.Types;
 
+    /// <summary>
+    /// internal
+    /// </summary>
     internal class NuGetExpressionVisitor : NuGetVisitor
     {
         public NuGetExpressionVisitor() : base(new NuGetQueryFilter())

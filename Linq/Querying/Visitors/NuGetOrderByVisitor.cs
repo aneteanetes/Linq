@@ -5,6 +5,9 @@
     using System.Linq.Expressions;
     using Bars.NuGet.Querying.Types;
 
+    /// <summary>
+    /// internal
+    /// </summary>
     internal class NuGetOrderByVisitor : NuGetVisitor
     {
         private string method = "";

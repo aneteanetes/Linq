@@ -5,7 +5,10 @@ namespace Bars.NuGet.Querying
     using System.Linq;
     using global::Bars.NuGet.Querying.Types;
 
-    [DebuggerDisplay("{Id} {Version.ToString(3)} | Unpacked: {Unpacked}")]
+    /// <summary>
+    /// NuGet package with file paths
+    /// </summary>
+    [DebuggerDisplay("id: {Id} | version: {Version.ToString()} | Unpacked: {Unpacked}")]
     public sealed class NuGetPackage : NuGetPackageInfo
     {
         public IEnumerable<string> Items

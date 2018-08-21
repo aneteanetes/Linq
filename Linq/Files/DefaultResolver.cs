@@ -2,6 +2,9 @@
 {
     using System.IO;
 
+    /// <summary>
+    /// internal default path resolver
+    /// </summary>
     internal class DefaultPathResolver : PathResolver
     {
         public override string ResolveFilePath(NuGetPackage nuGetPackage)

@@ -3,6 +3,9 @@ namespace Bars.NuGet.Querying.Types
     using System.Collections.Generic;
     using global::NuGet.Versioning;
 
+    /// <summary>
+    /// NuGet package info
+    /// </summary>
     public class NuGetPackageInfo
     {
         public string Id { get; set; }

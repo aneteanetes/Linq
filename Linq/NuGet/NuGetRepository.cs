@@ -11,36 +11,46 @@ namespace Bars.NuGet.Querying.Client
     using Bars.NuGet.Querying.Files;
 
     /// <summary>
-    /// Репозиторий который агрегирует несколько NuGet-фидов или других репозиториев
+    /// Aggregate repository for multiple nuget feeds or another repositories
     /// </summary>
     public partial class NuGetRepository : IDisposable
     {
+        /// <summary>
+        /// Current logger instance
+        /// </summary>
+        public Microsoft.Extensions.Logging.ILogger Logger => this.loggerAdapter.logger;
+
+        /// <summary>
+        /// inner resolver
+        /// </summary>
         private PathResolver pathResolver; 
 
         /// <summary>
-        /// Репозитории-объекты из библиотеки NuGet
+        /// Native nuget repositories
         /// </summary>
         private readonly IEnumerable<SourceRepository> Repositories;
 
         /// <summary>
-        /// Фреймворки по которым происходит поиск пакетов
+        /// Target frameworks
         /// </summary>
         private readonly IEnumerable<NuGetFramework> Frameworks;
 
         /// <summary>
+        /// One cache for all repositories
         /// Кэш для всех операций
         /// </summary>
         private readonly SourceCacheContext sourceCacheContext = new SourceCacheContext();
 
         /// <summary>
-        /// Адаптеры логировщиков
+        /// Adapter for nuget.logger to microsoft.ext.logging
         /// </summary>
         private readonly NuGetLoggerAdapter loggerAdapter;
 
-        /// <summary>
-        /// Создаёт новое объектное представление агрегированного репозитория.
+        /// <summary>        
+        /// Creates new aggregated repository
         /// </summary>
-        /// <param name="feeds">Список фидов, с авторизацией</param>
+        /// <param name="pathResolver">path resolver</param>
+        /// <param name="logger">logger</param>
         public NuGetRepository(PathResolver pathResolver, Microsoft.Extensions.Logging.ILogger logger)
         {
             this.pathResolver = pathResolver;
@@ -48,19 +58,20 @@ namespace Bars.NuGet.Querying.Client
         }
 
         /// <summary>
-        /// Создаёт новое объектное представление агрегированного репозитория.
-        /// Так же, заполняет фреймворки: .NET standard с 1.0 до 2.1
+        /// Creates new aggregated repository
         /// </summary>
-        /// <param name="feeds">Список фидов, с авторизацией</param>
+        /// <param name="pathResolver">path resolver</param>
+        /// <param name="feeds">feeds</param>
         public NuGetRepository(PathResolver resolver, IEnumerable<string> feeds) : this(resolver, feeds, null)
         {
         }
 
         /// <summary>
-        /// Создаёт новое объектное представление агрегированного репозитория.
+        /// Creates new aggregated repository
         /// </summary>
-        /// <param name="feeds">Список фидов, с авторизацией</param>
-        /// <param name="frameworks">Список фреймворков, для поиска пакетов для подходящей платформы</param>
+        /// <param name="pathResolver">path resolver</param>
+        /// <param name="feeds">feeds</param>
+        /// <param name="logger">logger</param>
         public NuGetRepository(PathResolver resolver, IEnumerable<string> feeds, Microsoft.Extensions.Logging.ILogger logger) : this(resolver, logger)
         {
             var repositories = new List<SourceRepository>();
@@ -84,9 +95,11 @@ namespace Bars.NuGet.Querying.Client
         }
 
         /// <summary>
-        /// Создаёт новое объектное представление агрегированного репозитория.
+        /// Creates new aggregated repository
         /// </summary>
-        /// <param name="aggregateRepositories">Другие агрегрированные репозитории</param>
+        /// <param name="pathResolver">path resolver</param>
+        /// <param name="feeds">feeds</param>
+        /// <param name="aggregateRepositories">another repositories</param>
         public NuGetRepository(PathResolver resolver, Microsoft.Extensions.Logging.ILogger logger, params NuGetRepository[] aggregateRepositories) : this(resolver, logger)
         {
             var repositories = new List<SourceRepository>();
@@ -107,10 +120,8 @@ namespace Bars.NuGet.Querying.Client
             this.Repositories = repositories;
         }
 
-        public Microsoft.Extensions.Logging.ILogger Logger => this.loggerAdapter.logger;
-
         /// <summary>
-        /// Здесь освобождается кэш
+        /// dispose cache
         /// </summary>
         public void Dispose()
         {

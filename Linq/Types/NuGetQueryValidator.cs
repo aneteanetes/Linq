@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
 
-    public class NuGetQueryValidator
+    internal class NuGetQueryValidator
     {
         public bool IsValid { get; set; } = true;
 

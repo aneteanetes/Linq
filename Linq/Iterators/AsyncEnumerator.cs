@@ -4,7 +4,11 @@ namespace Bars.NuGet.Querying.Iterators
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public class AsyncEnumerator<T> : IEnumerator<T>
+    /// <summary>
+    /// internal
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    internal class AsyncEnumerator<T> : IEnumerator<T>
     {
         private IEnumerator<T> defferedEnumerator;
         private IEnumerator<Task<IEnumerable<T>>> sourceEnumerator;

@@ -13,6 +13,7 @@ namespace Bars.NuGet.Querying.Visitors
     /// Remove all <see cref="Queryable.Where{TSource}(System.Linq.IQueryable{TSource}, System.Linq.Expressions.Expression{System.Func{TSource, bool}})" />
     /// if it is applicable.
     /// If not : apply what can, but adds to <see cref="NuGetQueryExtensions.SyncIncompatibility(System.Linq.IQueryable{NuGetPackage})"/>
+    /// internal
     /// </summary>
     internal class NuGetWhereVisitor : NuGetVisitor
     {
