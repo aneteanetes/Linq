@@ -7,12 +7,14 @@ namespace Bars.NuGet.Querying
     {
         public static void Main(string[] args)
         {
-            var MyGet = new NuGetFeed(@"C:\nuget\", GetLogger(),
+            var MyGet = new NuGetFeed(@"C:\nuget\",
                 "https://barsgroup.myget.org/F/barsup-net-core/auth/122a4baf-5686-4675-8420-3132823267c7/api/v3/index.json",
                 "https://api.nuget.org/v3-index/index.json");
 
 
             Console.WriteLine($"Finded packages:");
+            
+            
 
             var packages = MyGet
                 .Where(x => x.Id.Contains("Bars"))

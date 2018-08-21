@@ -41,16 +41,6 @@ namespace Bars.NuGet.Querying.Client
         /// Создаёт новое объектное представление агрегированного репозитория.
         /// </summary>
         /// <param name="feeds">Список фидов, с авторизацией</param>
-        public NuGetRepository(string localDir, Microsoft.Extensions.Logging.ILogger logger)
-        {
-            this.pathResolver = new DefaultPathResolver { LocalRepositoryAbsolutePath = localDir };
-            this.loggerAdapter = new NuGetLoggerAdapter(logger);
-        }
-
-        /// <summary>
-        /// Создаёт новое объектное представление агрегированного репозитория.
-        /// </summary>
-        /// <param name="feeds">Список фидов, с авторизацией</param>
         public NuGetRepository(PathResolver pathResolver, Microsoft.Extensions.Logging.ILogger logger)
         {
             this.pathResolver = pathResolver;
@@ -62,7 +52,7 @@ namespace Bars.NuGet.Querying.Client
         /// Так же, заполняет фреймворки: .NET standard с 1.0 до 2.1
         /// </summary>
         /// <param name="feeds">Список фидов, с авторизацией</param>
-        public NuGetRepository(string localDir, IEnumerable<string> feeds) : this(localDir, feeds, null)
+        public NuGetRepository(PathResolver resolver, IEnumerable<string> feeds) : this(resolver, feeds, null)
         {
         }
 
@@ -71,7 +61,7 @@ namespace Bars.NuGet.Querying.Client
         /// </summary>
         /// <param name="feeds">Список фидов, с авторизацией</param>
         /// <param name="frameworks">Список фреймворков, для поиска пакетов для подходящей платформы</param>
-        public NuGetRepository(string localDir, IEnumerable<string> feeds, Microsoft.Extensions.Logging.ILogger logger) : this(localDir, logger)
+        public NuGetRepository(PathResolver resolver, IEnumerable<string> feeds, Microsoft.Extensions.Logging.ILogger logger) : this(resolver, logger)
         {
             var repositories = new List<SourceRepository>();
 
@@ -97,7 +87,7 @@ namespace Bars.NuGet.Querying.Client
         /// Создаёт новое объектное представление агрегированного репозитория.
         /// </summary>
         /// <param name="aggregateRepositories">Другие агрегрированные репозитории</param>
-        public NuGetRepository(string localDir, Microsoft.Extensions.Logging.ILogger logger, params NuGetRepository[] aggregateRepositories) : this(localDir, logger)
+        public NuGetRepository(PathResolver resolver, Microsoft.Extensions.Logging.ILogger logger, params NuGetRepository[] aggregateRepositories) : this(resolver, logger)
         {
             var repositories = new List<SourceRepository>();
             var frameworks = new List<NuGetFramework>();

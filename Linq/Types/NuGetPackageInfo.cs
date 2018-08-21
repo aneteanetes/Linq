@@ -1,7 +1,7 @@
 namespace Bars.NuGet.Querying.Types
 {
-    using System;
     using System.Collections.Generic;
+    using global::NuGet.Versioning;
 
     public class NuGetPackageInfo
     {
@@ -9,7 +9,7 @@ namespace Bars.NuGet.Querying.Types
 
         internal string PackageId { get; set; }
 
-        public Version Version { get; set; }
+        public NuGetVersion Version { get; set; }
 
         public string Title { get; set; }
 

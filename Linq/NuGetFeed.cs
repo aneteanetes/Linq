@@ -1,22 +1,33 @@
 namespace Bars.NuGet.Querying
 {
-    using Bars.NuGet.Querying.Client;
-    using Bars.NuGet.Querying.Iterators;
-    using global::Bars.NuGet.Querying.Feed;
-    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using Bars.NuGet.Querying.Client;
+    using Bars.NuGet.Querying.Files;
+    using Bars.NuGet.Querying.Iterators;
+    using global::Bars.NuGet.Querying.Feed;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
 
     public class NuGetFeed : IOrderedQueryable<NuGetPackage>
     {
         private readonly NuGetRepository nuGetRepository;
 
+        public NuGetFeed(string localDir, params string[] feeds) 
+            : this(localDir, NullLogger.Instance, feeds) { }
+
+        public NuGetFeed(PathResolver pathResolver, params string[] feeds)
+            : this(pathResolver, NullLogger.Instance, feeds) { }
+
         public NuGetFeed(string localDir, ILogger logger, params string[] feeds)
+            : this(new DefaultPathResolver { LocalRepositoryAbsolutePath = localDir }, logger, feeds) { }
+
+        public NuGetFeed(PathResolver pathResolver, ILogger logger, params string[] feeds)
         {
-            nuGetRepository = new NuGetRepository(localDir, feeds, logger);
+            nuGetRepository = new NuGetRepository(pathResolver, feeds, logger);
 
             Expression = Expression.Constant(this);
             Provider = new NuGetFeedQueryProvider(nuGetRepository);

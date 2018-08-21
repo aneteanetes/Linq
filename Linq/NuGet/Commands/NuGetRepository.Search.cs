@@ -46,7 +46,7 @@ namespace Bars.NuGet.Querying.Client
                 Summary = metadata.Summary,
                 Tags = new HashSet<string>(metadata.Tags.Split(", ", StringSplitOptions.RemoveEmptyEntries)),
                 Title = metadata.Title,
-                Version = metadata.Identity.Version.Version
+                Version = metadata.Identity.Version
             };
         }
 
