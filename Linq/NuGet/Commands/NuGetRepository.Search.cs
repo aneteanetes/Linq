@@ -118,16 +118,17 @@ namespace Bars.NuGet.Querying.Client
             var identity = new PackageIdentity(nuGetPackage.Id, new NuGetVersion(nuGetPackage.Version));
             var loader = await resource.GetPackageDownloaderAsync(identity, sourceCacheContext, loggerAdapter, CancellationToken.None);
 
+            var resolvedFilePath = this.pathResolver.ResolveFilePath(nuGetPackage);
+            var resolvedPath = Path.GetDirectoryName(resolvedFilePath);
 
-            var dir = Path.Combine(this.localDir, $"{nuGetPackage.Id} {nuGetPackage.Version.ToString(3)}");
-            if (!Directory.Exists(dir))
+            if (!Directory.Exists(resolvedPath))
             {
-                Directory.CreateDirectory(dir);
-            }
+                Directory.CreateDirectory(resolvedPath);
+            }            
 
             if (typeof(RemotePackageArchiveDownloader).IsAssignableFrom(loader.GetType()))
             {
-                await loader.CopyNupkgFileToAsync(Path.Combine(dir, $"{nuGetPackage.Id} {nuGetPackage.Version.ToString(3)}.nupkg"), CancellationToken.None);
+                await loader.CopyNupkgFileToAsync(resolvedFilePath, CancellationToken.None);
             }
 
             var infoReader = loader.ContentReader;
@@ -190,7 +191,7 @@ namespace Bars.NuGet.Querying.Client
                 return targetPath;
             }
 
-            await nupkgReader.CopyFilesAsync(dir, items, InternalUnpack, loggerAdapter, CancellationToken.None);
+            await nupkgReader.CopyFilesAsync(resolvedPath, items, InternalUnpack, loggerAdapter, CancellationToken.None);
 
             nuGetPackage.Pdb = FileMap[".pdb"];
             nuGetPackage.Xml = FileMap[".xml"];

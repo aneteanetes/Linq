@@ -9,12 +9,10 @@ namespace Bars.NuGet.Querying.Feed
     internal class NuGetFeedQueryProvider : IQueryProvider
     {
         private readonly NuGetRepository NuGetRepository;
-        private readonly Expression root;
 
-        public NuGetFeedQueryProvider(NuGetRepository nuGetRepository, Expression root)
+        public NuGetFeedQueryProvider(NuGetRepository nuGetRepository)
         {
             this.NuGetRepository = nuGetRepository;
-            this.root = root;
         }
         
         public IQueryable CreateQuery(Expression expression)
@@ -37,7 +35,7 @@ namespace Bars.NuGet.Querying.Feed
             if (!IsSupported<TResult>())
                 throw new ArgumentException($"The type argument - {typeof(TResult)}, is not supported by {nameof(NuGetFeedQueryProvider)}.");
 
-            return (TResult)NuGetFeedQueryMaterializer.Execute(expression, NuGetRepository, root);
+            return (TResult)NuGetFeedQueryMaterializer.Execute(expression, NuGetRepository);
         }
 
         private bool IsSupported<T>() => typeof(IEnumerator<NuGetPackage>).IsAssignableFrom(typeof(T));

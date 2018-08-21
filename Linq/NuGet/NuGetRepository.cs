@@ -8,13 +8,14 @@ namespace Bars.NuGet.Querying.Client
     using global::NuGet.Protocol;
     using global::NuGet.Protocol.Core.Types;
     using global::Bars.NuGet.Querying.Logging;
+    using Bars.NuGet.Querying.Files;
 
     /// <summary>
     /// Репозиторий который агрегирует несколько NuGet-фидов или других репозиториев
     /// </summary>
     public partial class NuGetRepository : IDisposable
     {
-        private string localDir = string.Empty;
+        private PathResolver pathResolver; 
 
         /// <summary>
         /// Репозитории-объекты из библиотеки NuGet
@@ -42,7 +43,17 @@ namespace Bars.NuGet.Querying.Client
         /// <param name="feeds">Список фидов, с авторизацией</param>
         public NuGetRepository(string localDir, Microsoft.Extensions.Logging.ILogger logger)
         {
-            this.localDir = localDir;
+            this.pathResolver = new DefaultPathResolver { LocalRepositoryAbsolutePath = localDir };
+            this.loggerAdapter = new NuGetLoggerAdapter(logger);
+        }
+
+        /// <summary>
+        /// Создаёт новое объектное представление агрегированного репозитория.
+        /// </summary>
+        /// <param name="feeds">Список фидов, с авторизацией</param>
+        public NuGetRepository(PathResolver pathResolver, Microsoft.Extensions.Logging.ILogger logger)
+        {
+            this.pathResolver = pathResolver;
             this.loggerAdapter = new NuGetLoggerAdapter(logger);
         }
 

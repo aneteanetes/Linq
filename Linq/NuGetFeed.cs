@@ -19,7 +19,7 @@ namespace Bars.NuGet.Querying
             nuGetRepository = new NuGetRepository(localDir, feeds, logger);
 
             Expression = Expression.Constant(this);
-            Provider = new NuGetFeedQueryProvider(nuGetRepository, Expression);
+            Provider = new NuGetFeedQueryProvider(nuGetRepository);
         }
 
         internal NuGetFeed(IQueryProvider provider, Expression expression)
